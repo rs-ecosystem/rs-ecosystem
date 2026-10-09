@@ -31,6 +31,7 @@ export const links = {
 
 export const nav = [
   { href: "/#aplikasi", label: "Aplikasi" },
+  { href: "/#preview", label: "Preview" },
   { href: "/#prinsip", label: "Prinsip" },
   { href: "/#teknologi", label: "Teknologi" },
   { href: "/#roadmap", label: "Roadmap" },
