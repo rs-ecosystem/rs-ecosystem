@@ -12,6 +12,7 @@ import {
   SendIcon,
   SmartphoneIcon,
 } from "lucide-react"
+import Image from "next/image"
 import { Fragment } from "react"
 
 import { ChromeIcon, GithubIcon, LinkedinIcon } from "@/components/brand/icons"
@@ -22,6 +23,7 @@ import { Badge } from "@/components/ui/badge"
 import { buttonClass } from "@/lib/button-class"
 import { Separator } from "@/components/ui/separator"
 import { cta, faq, links, principles, profile, stats, tech } from "@/content/site"
+import { getProfile } from "@/lib/github/data"
 import { cn } from "@/lib/utils"
 
 export function Stats() {
@@ -147,25 +149,37 @@ export function Tech() {
   )
 }
 
-export function About() {
+/** "M Ihsan Wahyudin" → "MW". */
+function initials(name: string) {
+  const words = name.split(/\s+/).filter(Boolean)
+  return ((words[0]?.[0] ?? "") + (words.length > 1 ? words[words.length - 1][0] : "")).toUpperCase()
+}
+
+export async function About() {
+  // Name, role, location and photo follow the GitHub profile; content/site.ts is the fallback.
+  const gh = await getProfile(profile.github)
+  const name = gh?.name ?? profile.name
+  const role = gh?.bio ?? profile.role
+  const location = gh?.location ?? profile.location
+  const githubUrl = gh?.url ?? `https://github.com/${profile.github}`
   return (
     <section id="tentang" className="border-b py-14 md:py-28">
       <Container className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-16">
         <SectionHeading kicker="Tentang pembuat" title="Satu orang, banyak platform." size="md" className="lg:hidden" />
         <div className="flex flex-col gap-5 rounded-[18px] border bg-card p-5 shadow-xs md:gap-6 md:rounded-[20px] md:p-8 lg:w-[440px] lg:shrink-0">
           <div className="flex items-center gap-4">
-            <span className="flex size-14 shrink-0 items-center justify-center rounded-full border bg-muted text-lg font-semibold md:size-[72px] md:text-2xl">
-              {profile.initials}
+            <span className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-muted text-lg font-semibold md:size-[72px] md:text-2xl">
+              {gh ? <Image src={gh.avatarUrl} alt={`Foto profil ${name}`} fill sizes="72px" className="object-cover" /> : initials(name)}
             </span>
             <div className="flex flex-col gap-1">
-              <span className="text-[17px] font-semibold md:text-xl">{profile.name}</span>
-              <span className="text-[13px] text-muted-foreground md:text-sm">{profile.role}</span>
+              <span className="text-[17px] font-semibold md:text-xl">{name}</span>
+              <span className="text-[13px] text-muted-foreground md:text-sm">{role}</span>
             </div>
           </div>
           <p className="text-sm leading-relaxed text-muted-foreground md:text-[15px]">{profile.bio}</p>
           <ul className="flex flex-col gap-2.5 text-sm">
             {[
-              [MapPinIcon, profile.location],
+              [MapPinIcon, location],
               [BriefcaseIcon, profile.availability],
               [MailIcon, links.email],
             ].map(([Icon, text]) => {
@@ -180,7 +194,7 @@ export function About() {
           </ul>
           <Separator />
           <div className="flex flex-wrap gap-2">
-            <a href={links.github} target="_blank" rel="noreferrer" className={buttonClass({ variant: "outline" })}>
+            <a href={githubUrl} target="_blank" rel="noreferrer" className={buttonClass({ variant: "outline" })}>
               <GithubIcon data-icon="inline-start" />
               GitHub
             </a>

@@ -108,10 +108,15 @@ export const roadmap: RoadmapItem[] = [
   },
 ]
 
+/**
+ * The maker. Name, role (GitHub bio), location and photo come from the GitHub
+ * profile `github` (lib/github/data.ts `getProfile`, cached hourly); the
+ * values here are the fallback when GitHub can't be reached.
+ */
 export const profile = {
-  name: "Nama Pembuat",
-  initials: "MF",
-  role: "Software engineer · Rust & mobile",
+  github: "ihsanwahyudin",
+  name: "M Ihsan Wahyudin",
+  role: "Fullstack Web Developer",
   bio: "Saya membangun aplikasi yang ingin saya pakai sendiri: cepat, offline, dan menghormati privasi. Rs Ecosystem adalah tempat semua aplikasi itu tinggal.",
   location: "Indonesia",
   availability: "Terbuka untuk kolaborasi & proyek lepas",
