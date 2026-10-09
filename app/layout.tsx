@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next"
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 
@@ -43,6 +44,8 @@ export default function RootLayout({
             <HashScroller />
           </TooltipProvider>
         </ThemeProvider>
+        {/* Vercel Web Analytics: cookieless, aggregate page views (enable it in the Vercel project). */}
+        <Analytics />
       </body>
     </html>
   )
