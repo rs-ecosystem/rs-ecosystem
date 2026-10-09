@@ -33,6 +33,7 @@ npm run build && npm run lint && npm run typecheck
 
 - **New live app:** add it to `liveApps` (repo, platforms, screen, fallback). If it needs its own phone screenshot, add it to `components/mock/phone.tsx`.
 - **New coming-soon app:** add it to `upcomingApps`.
+- **Store preview (section "Preview"):** each live app's `gallery` points at `public/store/<slug>/` — the Mac banner, six phone screenshots, the store hero (1920×1080) and the feature graphic (1024×500), exported from Penpot's "Store preview" page, converted to WebP (`cwebp -q 86 -m 6`). Replace the files (same names) to update them.
 - **Roadmap item with live progress:** add `source: { type: "milestone", app: "<slug>", milestone: "<milestone title>" }`. Use `{ type: "latest-release", app }` to show the newest release instead.
 - **Waitlist / "Kabari saya":** `links.waitlist` in `content/site.ts` is a `mailto:` for now; swap in a Tally or Formspree URL when you have one.
 - Use `buttonClass()` (`lib/button-class.ts`) for links styled as buttons. It merges classes the way `<Button>` does, which plain `buttonVariants()` does not.

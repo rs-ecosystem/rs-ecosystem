@@ -86,7 +86,7 @@ export function Tech() {
             ))}
           </div>
         </div>
-        <figure aria-label="Arsitektur: tampilan native di atas satu inti Rust" className="flex flex-col items-center rounded-2xl border bg-sidebar p-4 md:rounded-[20px] md:p-8">
+        <figure aria-label="Arsitektur: UI native di atas satu Rust Core" className="flex flex-col items-center rounded-2xl border bg-sidebar p-4 md:rounded-[20px] md:p-8">
           <div className="grid w-full grid-cols-3 gap-2 md:gap-3">
             {[
               [AppleIcon, "iPhone & Mac", "SwiftUI"],
@@ -118,8 +118,8 @@ export function Tech() {
               <CpuIcon className="size-5" />
             </span>
             <div className="flex flex-col gap-0.5">
-              <span className="text-sm font-semibold md:text-base">Inti Rust (Crux)</span>
-              <span className="text-xs text-primary-foreground/60 md:text-[13px]">Aturan bisnis, enkripsi, laporan, sinkronisasi</span>
+              <span className="text-sm font-semibold md:text-base">Rust Core (Crux)</span>
+              <span className="text-xs text-primary-foreground/60 md:text-[13px]">Business logic, enkripsi, laporan, sinkronisasi</span>
             </div>
           </div>
           <span className="my-1 h-5 w-px bg-ring md:h-7" />

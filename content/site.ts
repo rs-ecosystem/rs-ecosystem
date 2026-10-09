@@ -18,7 +18,7 @@ export const site = {
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://rs-ecosystem.vercel.app",
   title: "Rs Ecosystem — Aplikasi pribadi yang datanya tetap milik Anda",
   description:
-    "Kumpulan aplikasi offline-first untuk keuangan, password, dan kebutuhan pribadi lainnya. Satu inti Rust, tampilan native di Android, iPhone, dan Mac. Tanpa akun, tanpa server, tanpa iklan.",
+    "Kumpulan aplikasi offline-first untuk keuangan, password, dan kebutuhan pribadi lainnya. Satu Rust Core, UI native di Android, iPhone, dan Mac. Tanpa akun, tanpa server, tanpa iklan.",
 }
 
 export const links = {
@@ -31,6 +31,7 @@ export const links = {
 
 export const nav = [
   { href: "/#aplikasi", label: "Aplikasi" },
+  { href: "/#preview", label: "Preview" },
   { href: "/#prinsip", label: "Prinsip" },
   { href: "/#teknologi", label: "Teknologi" },
   { href: "/#roadmap", label: "Roadmap" },
@@ -45,22 +46,22 @@ export const hero = {
 export const stats = [
   { value: "100%", label: "Offline-first", detail: "Data tidak pernah meninggalkan perangkat tanpa izin Anda." },
   { value: "0", label: "Server & akun", detail: "Tidak perlu daftar. Buka aplikasi, langsung pakai." },
-  { value: "1", label: "Inti Rust", detail: "Logika yang sama dan teruji di setiap platform." },
+  { value: "1", label: "Rust Core", detail: "Logika yang sama dan teruji di setiap platform." },
   { value: "3+", label: "Platform native", detail: "Android, iPhone, Mac, dan ekstensi Chrome." },
 ]
 
 export const principles: { icon: LucideIcon; title: string; body: string }[] = [
-  { icon: WifiOffIcon, title: "Offline dulu", body: "Semua fitur berjalan tanpa internet. Koneksi hanya dipakai saat Anda memintanya, misalnya untuk sinkronisasi." },
+  { icon: WifiOffIcon, title: "Offline-first", body: "Semua fitur berjalan tanpa internet. Koneksi hanya dipakai saat Anda memintanya, misalnya untuk sinkronisasi." },
   { icon: LockKeyholeIcon, title: "Terenkripsi di perangkat", body: "Data dienkripsi sebelum disimpan (XChaCha20-Poly1305, Argon2id). Kunci tidak pernah keluar dari perangkat Anda." },
   { icon: UserXIcon, title: "Tanpa akun, tanpa iklan", body: "Tidak ada pendaftaran, pelacakan, atau iklan. Aplikasi tidak tahu siapa Anda, dan memang tidak perlu tahu." },
   { icon: SmartphoneIcon, title: "Native di setiap platform", body: "SwiftUI di iPhone & Mac, Jetpack Compose di Android. Bukan web view, jadi terasa cepat dan akrab." },
-  { icon: CpuIcon, title: "Satu inti Rust", body: "Aturan bisnis ditulis sekali dalam Rust dan diuji otomatis, lalu dipakai bersama oleh semua platform." },
+  { icon: CpuIcon, title: "Satu Rust Core", body: "Business logic ditulis sekali di Rust dan diuji otomatis, lalu dipakai bersama oleh semua platform." },
   { icon: FileDownIcon, title: "Data bisa dibawa", body: "Ekspor, backup, dan pindah perangkat kapan saja dengan file Anda sendiri. Tidak ada yang mengunci Anda." },
 ]
 
 export const tech = {
-  title: "Satu inti Rust, tampilan native.",
-  body: "Logika aplikasi ditulis sekali di Rust dengan arsitektur Crux. Setiap platform hanya menggambar layar dan meneruskan aksi, jadi perilakunya sama persis di mana pun.",
+  title: "Satu Rust Core, UI native.",
+  body: "Logika aplikasi ditulis sekali di Rust dengan arsitektur Crux. Setiap platform hanya menggambar UI dan meneruskan aksi, jadi perilakunya sama persis di mana pun.",
   badges: ["Rust", "Crux", "SQLite", "SwiftUI", "Jetpack Compose", "BoltFFI", "XChaCha20-Poly1305", "Argon2id", "shadcn/ui"],
 }
 
@@ -117,9 +118,9 @@ export const profile = {
   intro:
     "Dari desain sampai rilis di toko aplikasi, setiap bagian Rs Ecosystem dikerjakan sendiri. Ini portofolio sekaligus bukti bahwa aplikasi pribadi bisa dibuat dengan standar tinggi.",
   skills: [
-    { icon: CpuIcon, title: "Arsitektur lintas platform", body: "Inti Rust + Crux, FFI ke Swift & Kotlin, SQLite terenkripsi.", tags: ["Rust", "Crux", "SQLite"] },
+    { icon: CpuIcon, title: "Arsitektur lintas platform", body: "Rust Core + Crux, FFI ke Swift & Kotlin, SQLite terenkripsi.", tags: ["Rust", "Crux", "SQLite"] },
     { icon: SmartphoneIcon, title: "Aplikasi native", body: "SwiftUI untuk iOS & macOS, Jetpack Compose untuk Android.", tags: ["SwiftUI", "Compose"] },
-    { icon: LayersIcon, title: "Desain sistem & UI/UX", body: "shadcn/ui diterjemahkan ke native, dirancang lebih dulu di Penpot.", tags: ["shadcn/ui", "Penpot"] },
+    { icon: LayersIcon, title: "Design system & UI/UX", body: "shadcn/ui diadaptasi ke native, dirancang lebih dulu di Penpot.", tags: ["shadcn/ui", "Penpot"] },
     { icon: ShieldCheckIcon, title: "Keamanan & privasi", body: "Enkripsi end-to-end, passkey, dan sinkronisasi zero-knowledge.", tags: ["Argon2id", "Passkey"] },
   ] as { icon: LucideIcon; title: string; body: string; tags: string[] }[],
 }
