@@ -109,7 +109,7 @@ const dashed = "border-[1.5px] border-dashed border-dash bg-sidebar"
 
 function ComingSoon() {
   return (
-    <div id="segera-hadir" className="flex scroll-mt-24 flex-col gap-4 pt-2 md:gap-6">
+    <div id="segera-hadir" className="flex flex-col gap-4 pt-2 md:gap-6">
       <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
         <div className="flex items-center gap-2.5">
           <h3 className="text-[17px] font-semibold md:text-xl">Segera hadir</h3>

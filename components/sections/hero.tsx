@@ -1,10 +1,10 @@
 import { AppleIcon, ArrowRightIcon, SmartphoneIcon } from "lucide-react"
-import Link from "next/link"
 import type { CSSProperties } from "react"
 
 import { ChromeIcon } from "@/components/brand/icons"
 import { Phone } from "@/components/mock/phone"
 import { Container } from "@/components/site/layout"
+import { ScrollLink } from "@/components/site/scroll-link"
 import { buttonClass } from "@/lib/button-class"
 import { liveApps } from "@/content/apps"
 import { hero } from "@/content/site"
@@ -32,24 +32,24 @@ export async function Hero() {
       />
       <Container className="relative lg:h-[760px]">
         <div className="flex max-w-[600px] flex-col gap-5 pt-8 md:gap-7 md:pt-16 lg:pt-24">
-          <Link
+          <ScrollLink
             href="/#aplikasi"
             className="flex w-fit items-center gap-2 rounded-full border bg-background py-1.5 pr-3.5 pl-3 text-xs font-medium shadow-xs transition-colors hover:bg-muted md:text-[13px]"
           >
             <span className="size-2 rounded-full bg-success" />
             {pill}
             <ArrowRightIcon className="size-4 text-muted-foreground" />
-          </Link>
+          </ScrollLink>
           <h1 className="text-4xl leading-[1.1] font-semibold tracking-[-0.03em] text-balance md:text-6xl md:text-wrap md:leading-[1.08]">{hero.headline}</h1>
           <p className="max-w-[560px] text-base leading-relaxed text-muted-foreground md:text-lg">{hero.subline}</p>
           <div className="flex flex-col gap-2.5 sm:flex-row sm:gap-3">
-            <Link href="/#aplikasi" className={buttonClass({ size: "lg" })}>
+            <ScrollLink href="/#aplikasi" className={buttonClass({ size: "lg" })}>
               Jelajahi aplikasi
               <ArrowRightIcon data-icon="inline-end" />
-            </Link>
-            <Link href="/#tentang" className={buttonClass({ size: "lg", variant: "outline" })}>
+            </ScrollLink>
+            <ScrollLink href="/#tentang" className={buttonClass({ size: "lg", variant: "outline" })}>
               Lihat portofolio
-            </Link>
+            </ScrollLink>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 pt-2 sm:justify-start">
             <span className="hidden text-[13px] text-muted-foreground sm:inline">Tersedia di</span>
