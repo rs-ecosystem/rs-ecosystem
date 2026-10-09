@@ -1,0 +1,27 @@
+# Copy to .github/workflows/notify-website.yml in rs-finance and rs-password.
+# When a release or milestone changes, it asks Vercel to rebuild rs-ecosystem,
+# so the new version, notes and downloads show up within minutes instead of
+# waiting for the hourly cache.
+#
+# Setup: Vercel → rs-ecosystem → Settings → Git → Deploy Hooks → create one
+# (branch: main), then in each app repo add it as the Actions secret
+# VERCEL_DEPLOY_HOOK_URL (Settings → Secrets and variables → Actions).
+name: Notify website
+
+on:
+  release:
+    types: [published, edited, deleted]
+  milestone:
+    types: [created, edited, closed, opened, deleted]
+  workflow_dispatch:
+
+jobs:
+  deploy-hook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel deploy hook
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK" ]; then echo "VERCEL_DEPLOY_HOOK_URL is not set"; exit 1; fi
+          curl -fsS -X POST "$HOOK"

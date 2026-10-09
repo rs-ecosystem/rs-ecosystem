@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Penpot plugin scripts, pasted into the Penpot MCP.
+    "design/**",
   ]),
 ]);
 
