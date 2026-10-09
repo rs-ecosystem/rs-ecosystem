@@ -107,11 +107,17 @@ export function Footer() {
             {footerColumns.map((col) => (
               <div key={col.title} className="flex flex-col gap-3">
                 <span className="text-sm font-semibold">{col.title}</span>
-                {col.items.map(([label, href]) => (
-                  <ScrollLink key={label} href={href} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-                    {label}
-                  </ScrollLink>
-                ))}
+                {col.items.map(([label, href]) =>
+                  href.startsWith("http") ? (
+                    <a key={label} href={href} target="_blank" rel="noreferrer" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                      {label}
+                    </a>
+                  ) : (
+                    <ScrollLink key={label} href={href} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                      {label}
+                    </ScrollLink>
+                  )
+                )}
               </div>
             ))}
           </div>

@@ -21,12 +21,14 @@ export const site = {
     "Kumpulan aplikasi offline-first untuk keuangan, password, dan kebutuhan pribadi lainnya. Satu Rust Core, UI native di Android, iPhone, dan Mac. Tanpa akun, tanpa server, tanpa iklan.",
 }
 
+const email = "m.ihsanwahyudin@gmail.com"
+
 export const links = {
   github: "https://github.com/ihsanwahyudin",
-  linkedin: "https://www.linkedin.com/",
-  email: "halo@rs-ecosystem.dev",
+  linkedin: "https://www.linkedin.com/in/muhammad-ihsan-wahyudin-1a4a19209/",
+  email,
   /** Waitlist sign-up. A mailto works without a backend; swap in a Tally / Formspree URL later. */
-  waitlist: (app: string) => `mailto:halo@rs-ecosystem.dev?subject=${encodeURIComponent(`Waitlist ${app}`)}`,
+  waitlist: (app: string) => `mailto:${email}?subject=${encodeURIComponent(`Waitlist ${app}`)}`,
 }
 
 export const nav = [
