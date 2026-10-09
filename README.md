@@ -28,7 +28,8 @@ npm run build && npm run lint && npm run typecheck
 1. Import the repo in Vercel (framework: Next.js; no settings to change).
 2. **Environment variable `GITHUB_TOKEN`:** a fine-grained personal access token limited to `rs-finance` and `rs-password`, with **Contents: Read** (releases and downloads) and **Issues: Read** (milestones). Set an expiry date and renew it before it lapses. The site falls back gracefully if it expires.
 3. The site lives at https://rs-ecosystem.ihsan.my.id (DNS on Cloudflare, CNAME to Vercel). `NEXT_PUBLIC_SITE_URL` overrides it, e.g. for a preview deployment.
-4. **Instant updates:** create a Deploy Hook (Vercel → Settings → Git → Deploy Hooks). In each app repo, add it as the secret `VERCEL_DEPLOY_HOOK_URL` and copy `docs/github/notify-website.yml` to `.github/workflows/`. Publishing a release or changing a milestone then rebuilds the site.
+4. **Analytics:** `<Analytics />` from `@vercel/analytics` is in `app/layout.tsx`. Turn it on in Vercel → Project → Analytics → Enable; it only counts on production deployments, and dev mode loads a debug script that sends nothing. It is cookieless and aggregate (pages, referrers, countries, devices), so there is no consent banner and no way to identify individual visitors.
+5. **Instant updates:** create a Deploy Hook (Vercel → Settings → Git → Deploy Hooks). In each app repo, add it as the secret `VERCEL_DEPLOY_HOOK_URL` and copy `docs/github/notify-website.yml` to `.github/workflows/`. Publishing a release or changing a milestone then rebuilds the site.
 
 ## Making changes
 
