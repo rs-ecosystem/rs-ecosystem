@@ -101,7 +101,7 @@ export const liveApps: LiveApp[] = [
   {
     slug: "rs-password",
     name: "Rs Password",
-    tagline: "Pengelola password offline",
+    tagline: "Password manager offline",
     description:
       "Satu brankas terenkripsi untuk login, kartu, kode 2FA, dan passkey. Isi otomatis di Android dan Chrome, sinkron lewat folder cloud milik Anda sendiri.",
     features: [
