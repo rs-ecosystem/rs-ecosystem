@@ -15,7 +15,7 @@ export const site = {
   name: "Rs Ecosystem",
   /** Copyright year (a constant: reading the clock would make every page dynamic). */
   since: 2026,
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://rs-ecosystem.vercel.app",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://rs-ecosystem.ihsan.my.id",
   title: "Rs Ecosystem — Aplikasi pribadi yang datanya tetap milik Anda",
   description:
     "Kumpulan aplikasi offline-first untuk keuangan, password, dan kebutuhan pribadi lainnya. Satu Rust Core, UI native di Android, iPhone, dan Mac. Tanpa akun, tanpa server, tanpa iklan.",
