@@ -6,13 +6,14 @@ import { Phone } from "@/components/mock/phone"
 import { Container, SectionHeading } from "@/components/site/layout"
 import { Badge } from "@/components/ui/badge"
 import { buttonClass } from "@/lib/button-class"
-import { liveApps, upcomingApps, type LiveApp } from "@/content/apps"
+import { cardPreviewIndex, liveApps, upcomingApps, type LiveApp } from "@/content/apps"
 import { links } from "@/content/site"
 import { getAppStatus } from "@/lib/apps"
 import { platformLabel } from "@/lib/release"
 import { cn } from "@/lib/utils"
 
 import { DownloadMenu } from "./download-menu"
+import { ExpandHint, PreviewTrigger } from "./preview-lightbox"
 
 export function AppsSection() {
   return (
@@ -37,13 +38,19 @@ async function AppCard({ app }: { app: LiveApp }) {
   const status = await getAppStatus(app)
   return (
     <article className="flex flex-col overflow-hidden rounded-[18px] border bg-card shadow-xs md:rounded-[20px]">
-      <div
-        aria-hidden
-        className="relative h-60 overflow-hidden border-b md:h-[340px]"
-        style={{ background: `linear-gradient(135deg, var(--sidebar) 0%, var(--tint-${app.tint}) 100%)` }}
+      <PreviewTrigger
+        slug={app.slug}
+        index={cardPreviewIndex(app)}
+        label={`Lihat preview ${app.name}`}
+        className="relative block h-60 w-full overflow-hidden border-b focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset md:h-[340px]"
       >
-        <Phone screen={app.screen} className="absolute top-10 left-7 md:top-14 md:left-1/2 md:-translate-x-1/2" />
-      </div>
+        <span aria-hidden className="absolute inset-0" style={{ background: `linear-gradient(135deg, var(--sidebar) 0%, var(--tint-${app.tint}) 100%)` }} />
+        <Phone
+          screen={app.screen}
+          className="absolute top-10 left-7 transition-transform duration-500 ease-out group-hover:-translate-y-2 md:top-14 md:left-1/2 md:-translate-x-1/2"
+        />
+        <ExpandHint label="Lihat preview" />
+      </PreviewTrigger>
       <div className="flex flex-1 flex-col gap-5 p-5 md:p-7">
         <div className="flex items-center gap-3 md:gap-3.5">
           <AppIcon size={48} word={app.iconWord} />
@@ -102,7 +109,7 @@ const dashed = "border-[1.5px] border-dashed border-dash bg-sidebar"
 
 function ComingSoon() {
   return (
-    <div id="segera-hadir" className="flex scroll-mt-24 flex-col gap-4 pt-2 md:gap-6">
+    <div id="segera-hadir" className="flex flex-col gap-4 pt-2 md:gap-6">
       <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
         <div className="flex items-center gap-2.5">
           <h3 className="text-[17px] font-semibold md:text-xl">Segera hadir</h3>

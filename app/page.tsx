@@ -2,11 +2,13 @@ import { AppsSection } from "@/components/sections/apps"
 import { About, Cta, Faq, Principles, Stats, Tech } from "@/components/sections/content"
 import { Hero } from "@/components/sections/hero"
 import { Preview } from "@/components/sections/preview"
+import { PreviewProvider } from "@/components/sections/preview-lightbox"
+import { previewApps } from "@/content/apps"
 import { Roadmap } from "@/components/sections/roadmap"
 
 export default function Page() {
   return (
-    <>
+    <PreviewProvider apps={previewApps()}>
       <Hero />
       <Stats />
       <AppsSection />
@@ -17,6 +19,6 @@ export default function Page() {
       <About />
       <Faq />
       <Cta />
-    </>
+    </PreviewProvider>
   )
 }

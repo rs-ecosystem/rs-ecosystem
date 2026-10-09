@@ -1,5 +1,4 @@
 import { DownloadIcon, MailIcon } from "lucide-react"
-import Link from "next/link"
 import type { ReactNode } from "react"
 
 import { AppIcon, GithubIcon, LinkedinIcon } from "@/components/brand/icons"
@@ -9,6 +8,7 @@ import { links, nav, site } from "@/content/site"
 import { cn } from "@/lib/utils"
 
 import { MobileNav } from "./mobile-nav"
+import { ScrollLink } from "./scroll-link"
 import { ThemeToggle } from "./theme-toggle"
 
 /** Content column: 1200 wide on desktop (the design's 120 px side padding at 1440). */
@@ -51,10 +51,10 @@ export function SectionHeading({
 
 export function Brand({ size = 32 }: { size?: number }) {
   return (
-    <Link href="/" className="flex items-center gap-2.5 font-semibold">
+    <ScrollLink href="/" className="flex items-center gap-2.5 font-semibold">
       <AppIcon size={size} />
       <span className="text-[15px] md:text-base">{site.name}</span>
-    </Link>
+    </ScrollLink>
   )
 }
 
@@ -65,9 +65,9 @@ export function Navbar() {
         <Brand />
         <nav className="hidden items-center gap-8 lg:flex">
           {nav.map((item) => (
-            <Link key={item.href} href={item.href} className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+            <ScrollLink key={item.href} href={item.href} className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
               {item.label}
-            </Link>
+            </ScrollLink>
           ))}
         </nav>
         <div className="flex items-center gap-2">
@@ -75,10 +75,10 @@ export function Navbar() {
             <GithubIcon />
           </a>
           <ThemeToggle />
-          <Link href="/#aplikasi" className={cn(buttonClass(), "hidden md:inline-flex")}>
+          <ScrollLink href="/#aplikasi" className={cn(buttonClass(), "hidden md:inline-flex")}>
             <DownloadIcon data-icon="inline-start" />
             Unduh aplikasi
-          </Link>
+          </ScrollLink>
           <div className="lg:hidden">
             <MobileNav items={nav} />
           </div>
@@ -108,9 +108,9 @@ export function Footer() {
               <div key={col.title} className="flex flex-col gap-3">
                 <span className="text-sm font-semibold">{col.title}</span>
                 {col.items.map(([label, href]) => (
-                  <Link key={label} href={href} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                  <ScrollLink key={label} href={href} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                     {label}
-                  </Link>
+                  </ScrollLink>
                 ))}
               </div>
             ))}

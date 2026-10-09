@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 
 import "./globals.css"
 import { Footer, Navbar } from "@/components/site/layout"
+import { HashScroller } from "@/components/site/scroll-link"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { site } from "@/content/site"
@@ -39,6 +40,7 @@ export default function RootLayout({
             <Navbar />
             <main>{children}</main>
             <Footer />
+            <HashScroller />
           </TooltipProvider>
         </ThemeProvider>
       </body>

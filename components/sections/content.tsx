@@ -12,11 +12,11 @@ import {
   SendIcon,
   SmartphoneIcon,
 } from "lucide-react"
-import Link from "next/link"
 import { Fragment } from "react"
 
 import { ChromeIcon, GithubIcon, LinkedinIcon } from "@/components/brand/icons"
 import { Container, SectionHeading } from "@/components/site/layout"
+import { ScrollLink } from "@/components/site/scroll-link"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { buttonClass } from "@/lib/button-class"
@@ -265,10 +265,10 @@ export function Cta() {
             <p className="text-[15px] leading-relaxed text-primary-foreground/60 md:text-[17px]">{cta.body}</p>
           </div>
           <div className="relative flex flex-col gap-3 sm:flex-row">
-            <Link href="/#aplikasi" className={buttonClass({ variant: "secondary", size: "lg" })}>
+            <ScrollLink href="/#aplikasi" className={buttonClass({ variant: "secondary", size: "lg" })}>
               <DownloadIcon data-icon="inline-start" />
               Unduh aplikasi
-            </Link>
+            </ScrollLink>
             <a
               href={links.waitlist("Rs Ecosystem")}
               className={cn(buttonClass({ variant: "ghost", size: "lg" }), "border-primary-foreground/20 bg-primary-foreground/5 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground")}

@@ -43,7 +43,7 @@ export default function ChangelogPage() {
 async function AppReleases({ app }: { app: LiveApp }) {
   const releases = await getReleases(app.repo)
   return (
-    <div id={app.slug} className="flex scroll-mt-24 flex-col gap-6">
+    <div id={app.slug} className="flex flex-col gap-6">
       <div className="flex items-center gap-3.5 border-b pb-5">
         <AppIcon size={44} word={app.iconWord} />
         <div className="flex flex-col gap-0.5">

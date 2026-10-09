@@ -36,6 +36,8 @@ export type LiveApp = {
   iconWord?: string
   /** Phone mockup on the app card. */
   screen: "finance-laporan" | "password-kode-2fa"
+  /** Title of the gallery screenshot the preview opens at when the card's phone is clicked. */
+  previewFrom: string
   tint: "green" | "blue"
   repo: RepoRef
   /** Shown when GitHub has no release yet or can't be reached. */
@@ -79,6 +81,7 @@ export const liveApps: LiveApp[] = [
     platforms: ["android", "ios", "macos"],
     iconWord: "finance",
     screen: "finance-laporan",
+    previewFrom: "Laporan",
     tint: "green",
     repo: { owner: "ihsanwahyudin", name: "rs-finance" },
     fallback: { label: "Beta", released: true },
@@ -114,6 +117,7 @@ export const liveApps: LiveApp[] = [
     ],
     platforms: ["android", "macos", "chrome"],
     screen: "password-kode-2fa",
+    previewFrom: "Kode 2FA",
     tint: "blue",
     repo: { owner: "ihsanwahyudin", name: "rs-password" },
     fallback: { label: "Segera rilis", released: false },
@@ -188,6 +192,14 @@ export const upcomingApps: UpcomingApp[] = [
     ],
   },
 ]
+
+/** Lightbox index for `previewFrom` (0 is the Mac banner, so screenshots start at 1). */
+export function cardPreviewIndex(app: LiveApp): number {
+  return Math.max(1, 1 + app.gallery.screens.findIndex((s) => s.title === app.previewFrom))
+}
+
+/** The serializable part of an app the preview lightbox needs. */
+export const previewApps = () => liveApps.map(({ slug, name, iconWord, gallery }) => ({ slug, name, iconWord, gallery }))
 
 export function findLiveApp(slug: string): LiveApp | undefined {
   return liveApps.find((a) => a.slug === slug)
