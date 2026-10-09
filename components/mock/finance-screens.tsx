@@ -17,67 +17,19 @@ import {
   SlidersHorizontalIcon,
   UtensilsIcon,
   WalletIcon,
-  WifiIcon,
   type LucideIcon,
 } from "lucide-react"
-import type { ReactNode } from "react"
-
 import { cn } from "@/lib/utils"
 
-function Frame({ label, tab, children }: { label: string; tab: string; children: ReactNode }) {
-  return (
-    <div role="img" aria-label={label} className="flex h-[844px] w-[390px] flex-col bg-background text-foreground select-none">
-      <div className="flex h-[54px] shrink-0 items-center justify-between pr-7 pl-8">
-        <span className="text-base font-semibold">9:41</span>
-        <span className="flex items-center gap-1.5 text-xs font-semibold">
-          <WifiIcon className="size-4" />
-          100%
-        </span>
-      </div>
-      <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-hidden px-4 pt-2">{children}</div>
-      <TabBar active={tab} />
-    </div>
-  )
-}
+import { Card, Frame, IconButton, type Tab } from "./screen-kit"
 
-const tabs: [string, LucideIcon][] = [
+const tabs: Tab[] = [
   ["Beranda", HouseIcon],
   ["Transaksi", ArrowLeftRightIcon],
   ["", PlusIcon],
   ["Laporan", ChartPieIcon],
   ["Akun", WalletIcon],
 ]
-
-function TabBar({ active }: { active: string }) {
-  return (
-    <div className="flex h-[84px] shrink-0 items-start justify-between border-t bg-background px-5 pt-2">
-      {tabs.map(([label, Icon]) =>
-        label ? (
-          <span key={label} className={cn("flex w-16 flex-col items-center gap-1 pt-1 text-[11px]", label === active ? "font-semibold" : "font-medium text-muted-foreground")}>
-            <Icon className="size-6" strokeWidth={1.75} />
-            {label}
-          </span>
-        ) : (
-          <span key="add" className="flex size-[52px] items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <PlusIcon className="size-6" />
-          </span>
-        )
-      )}
-    </div>
-  )
-}
-
-function IconButton({ icon: Icon }: { icon: LucideIcon }) {
-  return (
-    <span className="flex size-8 items-center justify-center rounded-lg border bg-background">
-      <Icon className="size-4" />
-    </span>
-  )
-}
-
-function Card({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={cn("rounded-[14px] border bg-card", className)}>{children}</div>
-}
 
 function Round({ icon: Icon, size = 36 }: { icon: LucideIcon; size?: number }) {
   return (
@@ -89,7 +41,7 @@ function Round({ icon: Icon, size = 36 }: { icon: LucideIcon; size?: number }) {
 
 export function FinanceBeranda() {
   return (
-    <Frame label="Layar Beranda di Rs Finance" tab="Beranda">
+    <Frame label="Layar Beranda di Rs Finance" tabs={tabs} tab="Beranda">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-0.5">
           <span className="text-xs text-muted-foreground">Kamis, 2 Oktober 2026</span>
@@ -128,9 +80,9 @@ export function FinanceBeranda() {
       </div>
       <div className="-mr-4 flex gap-3 overflow-hidden">
         {[
-          [LandmarkIcon, "BCA", "Bank · 7890", "Rp9.200.000"],
-          [WalletIcon, "GoPay", "E-Wallet · 0812", "Rp1.250.000"],
-          [CreditCardIcon, "Flazz", "E-Money · 1234", "Rp2.000.000"],
+          [LandmarkIcon, "Rekening", "Bank · 7890", "Rp9.200.000"],
+          [WalletIcon, "Dompet digital", "E-Wallet · 0812", "Rp1.250.000"],
+          [CreditCardIcon, "Kartu e-money", "E-Money · 1234", "Rp2.000.000"],
         ].map(([Icon, name, sub, value]) => (
           <Card key={name as string} className="flex w-[150px] shrink-0 flex-col gap-2.5 p-3.5">
             <Round icon={Icon as LucideIcon} size={32} />
@@ -148,9 +100,9 @@ export function FinanceBeranda() {
       </div>
       <div className="flex flex-col gap-1">
         {[
-          [UtensilsIcon, "Makan & Minum", "GoPay · Hari ini, 12:30", "−Rp45.000", false],
-          [CarIcon, "Transportasi", "BCA · Hari ini, 08:15", "−Rp25.000", false],
-          [BanknoteIcon, "Gaji", "BCA · 1 Okt", "+Rp8.500.000", true],
+          [UtensilsIcon, "Makan & Minum", "E-Wallet · Hari ini, 12:30", "−Rp45.000", false],
+          [CarIcon, "Transportasi", "Rekening · Hari ini, 08:15", "−Rp25.000", false],
+          [BanknoteIcon, "Gaji", "Rekening · 1 Okt", "+Rp8.500.000", true],
         ].map(([Icon, name, sub, value, positive]) => (
           <div key={name as string} className="flex items-center gap-3 py-2">
             <Round icon={Icon as LucideIcon} />
@@ -177,7 +129,7 @@ const categories: [string, number, string][] = [
 
 export function FinanceLaporan() {
   return (
-    <Frame label="Layar Laporan di Rs Finance" tab="Laporan">
+    <Frame label="Layar Laporan di Rs Finance" tabs={tabs} tab="Laporan">
       <div className="-mb-1 flex items-center justify-between">
         <span className="text-2xl font-semibold">Laporan</span>
         <IconButton icon={SlidersHorizontalIcon} />

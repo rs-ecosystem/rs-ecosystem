@@ -1,16 +1,11 @@
-import Image from "next/image"
 import type { CSSProperties, ReactNode } from "react"
 
 import { cn } from "@/lib/utils"
 
 import { FinanceBeranda, FinanceLaporan } from "./finance-screens"
+import { PasswordBrankas, PasswordKode2fa } from "./password-screens"
 
 export type ScreenName = "finance-beranda" | "finance-laporan" | "password-brankas" | "password-kode-2fa"
-
-const images: Partial<Record<ScreenName, { src: string; alt: string }>> = {
-  "password-brankas": { src: "/screens/rs-password-brankas.png", alt: "Layar Brankas di Rs Password" },
-  "password-kode-2fa": { src: "/screens/rs-password-kode-2fa.png", alt: "Layar Kode 2FA di Rs Password" },
-}
 
 /**
  * Phone mockup drawn at its design size (414×868 bezel, 390×844 screen) and
@@ -21,16 +16,13 @@ export function Phone({
   scale = 1,
   className,
   style,
-  eager,
 }: {
   screen: ScreenName
   scale?: number | string
   className?: string
   style?: CSSProperties
-  eager?: boolean
 }) {
   const s = typeof scale === "number" ? String(scale) : scale
-  const image = images[screen]
   return (
     <div
       className={cn("relative shrink-0", className)}
@@ -41,11 +33,7 @@ export function Phone({
         style={{ transform: "scale(var(--s))" }}
       >
         <div className="theme-light absolute top-[10px] left-[10px] h-[844px] w-[390px] overflow-hidden rounded-[46px] bg-background">
-          {image ? (
-            <Image src={image.src} alt={image.alt} width={390} height={844} sizes="390px" loading={eager ? "eager" : "lazy"} fetchPriority={eager ? "high" : "auto"} className="size-full" />
-          ) : (
-            <Screen name={screen} />
-          )}
+          <Screen name={screen} />
         </div>
         <div className="absolute top-[21px] left-[145px] h-[34px] w-[120px] rounded-full bg-black" />
       </div>
@@ -54,7 +42,14 @@ export function Phone({
 }
 
 function Screen({ name }: { name: ScreenName }): ReactNode {
-  if (name === "finance-beranda") return <FinanceBeranda />
-  if (name === "finance-laporan") return <FinanceLaporan />
-  return null
+  switch (name) {
+    case "finance-beranda":
+      return <FinanceBeranda />
+    case "finance-laporan":
+      return <FinanceLaporan />
+    case "password-brankas":
+      return <PasswordBrankas />
+    case "password-kode-2fa":
+      return <PasswordKode2fa />
+  }
 }

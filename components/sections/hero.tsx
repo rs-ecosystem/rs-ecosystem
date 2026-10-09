@@ -76,14 +76,14 @@ export async function Hero() {
           style={{ width: "calc(640px * var(--hs))" } as CSSProperties}
         >
           <Phone screen="finance-beranda" scale="var(--hs)" className="absolute left-0" style={{ top: "calc(96px * var(--hs))" }} />
-          <Phone screen="password-brankas" scale="var(--hs)" className="absolute top-0" style={{ left: "calc(226px * var(--hs))" }} eager />
+          <Phone screen="password-brankas" scale="var(--hs)" className="absolute top-0" style={{ left: "calc(226px * var(--hs))" }} />
         </div>
 
         {/* Mobile & tablet: the same pair, cropped on both sides. */}
         <div aria-hidden className="relative -mx-4 mt-8 h-[420px] overflow-hidden md:-mx-8 lg:hidden">
           <div className="absolute top-0 left-1/2 h-full w-[390px] -translate-x-1/2">
             <Phone screen="finance-beranda" className="absolute top-[92px] -left-2.5" />
-            <Phone screen="password-brankas" className="absolute top-6 left-[186px]" eager />
+            <Phone screen="password-brankas" className="absolute top-6 left-[186px]" />
           </div>
         </div>
       </Container>

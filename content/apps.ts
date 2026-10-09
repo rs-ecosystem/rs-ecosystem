@@ -122,7 +122,7 @@ export const liveApps: LiveApp[] = [
     repo: { owner: "ihsanwahyudin", name: "rs-password" },
     fallback: { label: "Segera rilis", released: false },
     gallery: {
-      mac: { src: "/store/rs-password/mac.webp", alt: "Rs Password di Mac: brankas di jendela app, menu bar, dan isi otomatis login GitHub lewat ekstensi Chrome" },
+      mac: { src: "/store/rs-password/mac.webp", alt: "Rs Password di Mac: brankas di jendela app, menu bar, dan isi otomatis login lewat ekstensi Chrome" },
       banners: {
         hero: { src: "/store/rs-password/hero.webp", alt: "Rs Password: semua password Anda, aman di perangkat Anda" },
         feature: { src: "/store/rs-password/feature.webp", alt: "Rs Password: password manager offline yang terenkripsi" },
@@ -156,7 +156,7 @@ export const upcomingApps: UpcomingApp[] = [
   {
     slug: "rs-storage",
     name: "Rs Storage",
-    tagline: "Drive foto & file",
+    tagline: "Penyimpanan foto & file",
     description: "Simpan foto dan file pribadi terenkripsi, dengan galeri, folder, dan backup otomatis dari ponsel.",
     icon: HardDriveIcon,
     chips: [
@@ -182,7 +182,7 @@ export const upcomingApps: UpcomingApp[] = [
     name: "Rs LifeOS",
     tagline: "Kesehatan & aktivitas harian",
     description:
-      "Lacak tidur, kalori & makanan, lari dan olahraga ala Strava, serta aktivitas harian dalam satu dasbor.",
+      "Lacak tidur, kalori & makanan, lari dan olahraga, serta aktivitas harian dalam satu dasbor.",
     icon: ActivityIcon,
     chips: [
       { label: "Tidur", icon: BedIcon },

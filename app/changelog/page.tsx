@@ -15,7 +15,7 @@ import { formatBytes, formatDate, shortVersionLabel, versionStage } from "@/lib/
 
 export const metadata: Metadata = {
   title: "Catatan perubahan",
-  description: "Semua rilis Rs Finance dan Rs Password, langsung dari GitHub.",
+  description: "Semua rilis Rs Finance dan Rs Password, langsung dari sumbernya.",
 }
 
 export default function ChangelogPage() {
@@ -23,7 +23,7 @@ export default function ChangelogPage() {
     <section className="py-12 md:py-20">
       <Container className="flex flex-col gap-10 md:gap-14">
         <SectionHeading kicker="Catatan perubahan" title="Setiap rilis, apa adanya.">
-          Diambil langsung dari GitHub Releases setiap aplikasi, jadi halaman ini selalu sama dengan rilis terbaru.
+          Diambil langsung dari rilis setiap aplikasi, jadi halaman ini selalu sama dengan versi terbaru.
         </SectionHeading>
         <nav aria-label="Aplikasi" className="flex gap-2">
           {liveApps.map((app) => (

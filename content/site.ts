@@ -99,7 +99,7 @@ export const roadmap: RoadmapItem[] = [
   {
     when: "2027",
     title: "Sinkron & Rs Cloud",
-    body: "Sinkron lewat folder Drive/iCloud milik Anda, lalu Rs Cloud zero-knowledge untuk semua aplikasi.",
+    body: "Sinkron lewat folder cloud milik Anda, lalu Rs Cloud zero-knowledge untuk semua aplikasi.",
     status: "next",
   },
   {
@@ -143,7 +143,7 @@ export const faq = [
   },
   {
     q: "Bagaimana jika saya ganti ponsel?",
-    a: "Ekspor data ke file backup lalu buka di perangkat baru, atau pakai sinkronisasi lewat folder Google Drive / iCloud milik Anda.",
+    a: "Ekspor data ke file backup lalu buka di perangkat baru, atau pakai sinkronisasi lewat folder cloud milik Anda.",
   },
   {
     q: "Apakah aplikasi bisa dipakai tanpa internet?",
