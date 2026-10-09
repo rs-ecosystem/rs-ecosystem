@@ -129,7 +129,7 @@ export function Tech() {
             {[
               [DatabaseIcon, "SQLite lokal", "Tersimpan di perangkat"],
               [LockIcon, "Enkripsi per item", "Kunci hanya milik Anda"],
-              [FolderSyncIcon, "Folder sinkron", "Drive / iCloud milik Anda"],
+              [FolderSyncIcon, "Folder sinkron", "Folder cloud milik Anda"],
             ].map(([Icon, name, sub]) => {
               const I = Icon as typeof DatabaseIcon
               return (

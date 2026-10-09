@@ -21,11 +21,11 @@ export function classifyAsset(name: string): DownloadKind | null {
   if (n.endsWith(".apk")) {
     if (n.includes("arm64-v8a")) return { platform: "android", label: "Android", hint: "Hampir semua HP (pilih ini kalau ragu)", primary: true, order: 0 }
     if (n.includes("armeabi-v7a")) return { platform: "android", label: "Android 32-bit", hint: "HP lama", primary: false, order: 1 }
-    if (n.includes("x86_64")) return { platform: "android", label: "Android x86_64", hint: "Emulator & Chromebook", primary: false, order: 2 }
+    if (n.includes("x86_64")) return { platform: "android", label: "Android x86_64", hint: "Emulator & perangkat x86", primary: false, order: 2 }
     if (n.includes("x86")) return { platform: "android", label: "Android x86", hint: "Emulator lama", primary: false, order: 3 }
     return { platform: "android", label: "Android", hint: "APK", primary: true, order: 0 }
   }
-  if (n.endsWith(".dmg")) return { platform: "macos", label: "Mac", hint: "macOS 15+, Apple silicon & Intel", primary: true, order: 10 }
+  if (n.endsWith(".dmg")) return { platform: "macos", label: "Mac", hint: "macOS 15 ke atas, semua jenis Mac", primary: true, order: 10 }
   if (n.includes("chrome") && n.endsWith(".zip")) return { platform: "chrome", label: "Ekstensi Chrome", hint: "Butuh app Mac", primary: true, order: 20 }
   if (n.endsWith(".ipa")) return { platform: "ios", label: "iPhone", hint: "IPA", primary: true, order: 30 }
   return null
