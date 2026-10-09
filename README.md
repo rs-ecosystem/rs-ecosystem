@@ -17,6 +17,7 @@ npm run build && npm run lint && npm run typecheck
 | Version badge, "… sudah tersedia" pill, download menu | **GitHub Releases** of each app repo (newest non-draft release) | Hourly cache, plus the deploy hook below |
 | `/changelog` | Release notes (Markdown) of every release | Same as above |
 | Roadmap progress bar | **GitHub Milestone** whose title matches `source.milestone` in `content/site.ts` (closed vs total issues) | Same as above |
+| "Tentang pembuat": name, role, location, photo | **GitHub profile** `profile.github` in `content/site.ts` (name, bio, location, avatar) | Hourly cache; the values in `profile` are the fallback |
 
 - `lib/github/data.ts` fetches with `'use cache'`. A good reply is cached for an hour (`cacheLife('hours')`); a failure (no token, network, rate limit) returns `null` and is cached only for minutes. The UI then falls back to `fallback` in `content/apps.ts` or to the roadmap item as written, so a page is never empty.
 - **Downloads from private repos:** `/unduh/[app]/[asset]` (`app/unduh/…/route.ts`) checks that the asset belongs to a published release, asks GitHub for a short-lived signed URL with the server-side token, and redirects there. The file goes straight from GitHub to the visitor, so it uses no Vercel bandwidth, and the token never reaches the browser.

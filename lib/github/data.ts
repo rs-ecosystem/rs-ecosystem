@@ -48,6 +48,17 @@ type GhMilestone = {
   html_url: string
 }
 
+type GhUser = {
+  login: string
+  name: string | null
+  bio: string | null
+  location: string | null
+  avatar_url: string
+  html_url: string
+}
+
+export type Profile = { login: string; name: string; bio: string | null; location: string | null; avatarUrl: string; url: string }
+
 export const repoTag = (repo: RepoRef) => `github:${repo.owner}/${repo.name}`
 
 /**
@@ -100,6 +111,28 @@ export async function getMilestones(repo: RepoRef): Promise<Milestone[] | null> 
     }))
   } catch (error) {
     console.warn(`[github] milestones for ${repo.owner}/${repo.name}:`, (error as Error).message)
+    cacheLife("minutes")
+    return null
+  }
+}
+
+/** Public GitHub profile (name, bio, location, avatar). `null` when GitHub can't be reached. */
+export async function getProfile(login: string): Promise<Profile | null> {
+  "use cache"
+  cacheTag(`github:user:${login}`)
+  try {
+    const u = await githubGet<GhUser>(`/users/${login}`)
+    cacheLife("hours")
+    return {
+      login: u.login,
+      name: u.name?.trim() || u.login,
+      bio: u.bio?.trim() || null,
+      location: u.location?.trim() || null,
+      avatarUrl: u.avatar_url,
+      url: u.html_url,
+    }
+  } catch (error) {
+    console.warn(`[github] profile ${login}:`, (error as Error).message)
     cacheLife("minutes")
     return null
   }
