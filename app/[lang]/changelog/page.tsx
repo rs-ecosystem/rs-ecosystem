@@ -6,41 +6,55 @@ import { AppIcon } from "@/components/brand/icons"
 import { Markdown } from "@/components/markdown"
 import { Container, SectionHeading } from "@/components/site/layout"
 import { Badge } from "@/components/ui/badge"
-import { buttonClass } from "@/lib/button-class"
-import { liveApps, type LiveApp } from "@/content/apps"
+import { getLiveApps, type LiveApp } from "@/content/apps"
 import { links } from "@/content/site"
+import { getUi, type Ui } from "@/content/ui"
 import { downloadsFor } from "@/lib/apps"
+import { buttonClass } from "@/lib/button-class"
 import { getReleases } from "@/lib/github/data"
-import { formatBytes, formatDate, shortVersionLabel, versionStage } from "@/lib/release"
+import { fill, localeHref, type Locale } from "@/lib/i18n"
+import { getLocale } from "@/lib/locale"
+import { formatBytes, formatDate, versionStage } from "@/lib/release"
 
-export const metadata: Metadata = {
-  title: "Catatan perubahan",
-  description: "Semua rilis Rs Finance dan Rs Password, langsung dari sumbernya.",
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getLocale()
+  const t = getUi(lang).changelog
+  return {
+    title: t.metaTitle,
+    description: t.metaDescription,
+    alternates: { canonical: localeHref(lang, "/changelog"), languages: { id: "/changelog", en: "/en/changelog", "x-default": "/changelog" } },
+  }
 }
 
-export default function ChangelogPage() {
+const stageLabel = { alpha: "Alpha", beta: "Beta", rc: "RC" } as const
+
+export default async function ChangelogPage() {
+  const lang = await getLocale()
+  const ui = getUi(lang)
+  const t = ui.changelog
+  const apps = getLiveApps(lang)
   return (
     <section className="py-12 md:py-20">
       <Container className="flex flex-col gap-10 md:gap-14">
-        <SectionHeading kicker="Catatan perubahan" title="Setiap rilis, apa adanya.">
-          Diambil langsung dari rilis setiap aplikasi, jadi halaman ini selalu sama dengan versi terbaru.
+        <SectionHeading kicker={t.kicker} title={t.title}>
+          {t.body} {t.notesLanguage}
         </SectionHeading>
-        <nav aria-label="Aplikasi" className="flex gap-2">
-          {liveApps.map((app) => (
+        <nav aria-label={t.apps} className="flex gap-2">
+          {apps.map((app) => (
             <Link key={app.slug} href={`#${app.slug}`} className={buttonClass({ variant: "outline" })}>
               {app.name}
             </Link>
           ))}
         </nav>
-        {liveApps.map((app) => (
-          <AppReleases key={app.slug} app={app} />
+        {apps.map((app) => (
+          <AppReleases key={app.slug} app={app} lang={lang} t={t} />
         ))}
       </Container>
     </section>
   )
 }
 
-async function AppReleases({ app }: { app: LiveApp }) {
+async function AppReleases({ app, lang, t }: { app: LiveApp; lang: Locale; t: Ui["changelog"] }) {
   const releases = await getReleases(app.repo)
   return (
     <div id={app.slug} className="flex flex-col gap-6">
@@ -51,36 +65,37 @@ async function AppReleases({ app }: { app: LiveApp }) {
           <p className="text-sm text-muted-foreground">{app.tagline}</p>
         </div>
       </div>
-      {releases === null && <Empty text="Catatan rilis sedang tidak bisa dimuat. Coba lagi beberapa menit lagi." />}
+      {releases === null && <Empty text={t.unavailable} />}
       {releases?.length === 0 && (
-        <Empty text={`${app.name} belum punya rilis publik.`}>
+        <Empty text={fill(t.noRelease, { app: app.name })}>
           <a href={links.waitlist(app.name)} className={buttonClass({ variant: "outline" })}>
-            Kabari saya saat rilis
+            {t.notifyOnRelease}
           </a>
         </Empty>
       )}
       <ol className="flex flex-col gap-6">
         {releases?.map((r, i) => {
-          const downloads = downloadsFor(app, r)
+          const downloads = downloadsFor(app.slug, r, lang)
+          const stage = versionStage(r.version)
           return (
             <li key={r.tag} className="grid gap-3 md:grid-cols-[200px_1fr] md:gap-10">
               <div className="flex flex-row items-center gap-2 md:flex-col md:items-start md:gap-1.5">
                 <span className="font-semibold">{r.version}</span>
-                {r.publishedAt && <span className="text-sm text-muted-foreground">{formatDate(r.publishedAt)}</span>}
+                {r.publishedAt && <span className="text-sm text-muted-foreground">{formatDate(r.publishedAt, lang)}</span>}
                 <div className="flex gap-1.5">
-                  {i === 0 && <Badge>Terbaru</Badge>}
-                  {versionStage(r.version) !== "stable" && <Badge variant="outline">{shortVersionLabel(r.version).split(" ")[0]}</Badge>}
+                  {i === 0 && <Badge>{t.latest}</Badge>}
+                  {stage !== "stable" && <Badge variant="outline">{stageLabel[stage]}</Badge>}
                 </div>
               </div>
               <article className="flex flex-col gap-5 rounded-2xl border bg-card p-5 md:p-6">
-                {r.notes.trim() ? <Markdown>{r.notes}</Markdown> : <p className="text-sm text-muted-foreground">Tidak ada catatan untuk rilis ini.</p>}
+                {r.notes.trim() ? <Markdown>{r.notes}</Markdown> : <p className="text-sm text-muted-foreground">{t.noNotes}</p>}
                 {downloads.length > 0 && (
                   <div className="flex flex-wrap gap-2 border-t pt-4">
                     {downloads.map((d) => (
                       <a key={d.href} href={d.href} className={buttonClass({ variant: d.primary ? "outline" : "ghost", size: "sm" })}>
                         <DownloadIcon data-icon="inline-start" />
                         {d.label}
-                        <span className="text-muted-foreground">{formatBytes(d.size)}</span>
+                        <span className="text-muted-foreground">{formatBytes(d.size, lang)}</span>
                       </a>
                     ))}
                   </div>

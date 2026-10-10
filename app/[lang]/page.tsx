@@ -3,12 +3,15 @@ import { About, Cta, Faq, Principles, Stats, Tech } from "@/components/sections/
 import { Hero } from "@/components/sections/hero"
 import { Preview } from "@/components/sections/preview"
 import { PreviewProvider } from "@/components/sections/preview-lightbox"
-import { previewApps } from "@/content/apps"
 import { Roadmap } from "@/components/sections/roadmap"
+import { previewApps } from "@/content/apps"
+import { getUi } from "@/content/ui"
+import { getLocale } from "@/lib/locale"
 
-export default function Page() {
+export default async function Page() {
+  const lang = await getLocale()
   return (
-    <PreviewProvider apps={previewApps()}>
+    <PreviewProvider apps={previewApps(lang)} strings={getUi(lang).preview}>
       <Hero />
       <Stats />
       <AppsSection />

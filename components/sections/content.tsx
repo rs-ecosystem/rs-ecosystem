@@ -22,13 +22,18 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge"
 import { buttonClass } from "@/lib/button-class"
 import { Separator } from "@/components/ui/separator"
-import { cta, faq, links, principles, profile, stats, tech } from "@/content/site"
+import { getSite, links, profileGithub } from "@/content/site"
+import { getUi } from "@/content/ui"
 import { getProfile } from "@/lib/github/data"
+import { fill, localeHref } from "@/lib/i18n"
+import { getLocale } from "@/lib/locale"
 import { cn } from "@/lib/utils"
 
-export function Stats() {
+export async function Stats() {
+  const lang = await getLocale()
+  const { stats } = getSite(lang)
   return (
-    <section aria-label="Sekilas" className="border-b">
+    <section aria-label={getUi(lang).stats.label} className="border-b">
       <Container className="grid grid-cols-2 gap-x-4 gap-y-5 py-6 md:py-10 lg:flex lg:items-center">
         {stats.map((s, i) => (
           <Fragment key={s.label}>
@@ -47,12 +52,15 @@ export function Stats() {
   )
 }
 
-export function Principles() {
+export async function Principles() {
+  const lang = await getLocale()
+  const { principles } = getSite(lang)
+  const t = getUi(lang).principles
   return (
     <section id="prinsip" className="border-b bg-sidebar py-14 md:py-28">
       <Container className="flex flex-col gap-6 md:gap-14">
-        <SectionHeading kicker="Prinsip" title="Dibuat untuk orang yang peduli pada datanya.">
-          Bukan sekadar fitur: ini aturan yang dipegang setiap aplikasi Rs, dari baris kode pertama sampai rilis.
+        <SectionHeading kicker={t.kicker} title={t.title}>
+          {t.body}
         </SectionHeading>
         <div className="grid overflow-hidden rounded-2xl border bg-card max-md:divide-y md:grid-cols-2 md:gap-6 md:overflow-visible md:rounded-none md:border-0 md:bg-transparent lg:grid-cols-3">
           {principles.map((p) => (
@@ -72,12 +80,15 @@ export function Principles() {
   )
 }
 
-export function Tech() {
+export async function Tech() {
+  const lang = await getLocale()
+  const { tech } = getSite(lang)
+  const t = getUi(lang).tech
   return (
     <section id="teknologi" className="border-b py-14 md:py-28">
       <Container className="grid items-center gap-8 lg:grid-cols-[460px_1fr] lg:gap-16">
         <div className="flex flex-col gap-7">
-          <SectionHeading kicker="Teknologi" title={tech.title} size="md">
+          <SectionHeading kicker={t.kicker} title={tech.title} size="md">
             {tech.body}
           </SectionHeading>
           <div className="flex flex-wrap gap-2 max-lg:order-last">
@@ -88,12 +99,12 @@ export function Tech() {
             ))}
           </div>
         </div>
-        <figure aria-label="Arsitektur: UI native di atas satu Rust Core" className="flex flex-col items-center rounded-2xl border bg-sidebar p-4 md:rounded-[20px] md:p-8">
+        <figure aria-label={t.diagram} className="flex flex-col items-center rounded-2xl border bg-sidebar p-4 md:rounded-[20px] md:p-8">
           <div className="grid w-full grid-cols-3 gap-2 md:gap-3">
             {[
-              [AppleIcon, "iPhone & Mac", "SwiftUI"],
+              [AppleIcon, t.iphoneMac, "SwiftUI"],
               [SmartphoneIcon, "Android", "Jetpack Compose"],
-              [ChromeIcon, "Chrome", "Ekstensi MV3"],
+              [ChromeIcon, "Chrome", t.chromeExt],
             ].map(([Icon, name, sub]) => {
               const I = Icon as typeof AppleIcon
               return (
@@ -120,23 +131,26 @@ export function Tech() {
               <CpuIcon className="size-5" />
             </span>
             <div className="flex flex-col gap-0.5">
-              <span className="text-sm font-semibold md:text-base">Rust Core (Crux)</span>
-              <span className="text-xs text-primary-foreground/60 md:text-[13px]">Business logic, enkripsi, laporan, sinkronisasi</span>
+              <span className="text-sm font-semibold md:text-base">{t.core}</span>
+              <span className="text-xs text-primary-foreground/60 md:text-[13px]">{t.coreBody}</span>
             </div>
           </div>
           <span className="my-1 h-5 w-px bg-ring md:h-7" />
           <div className="grid w-full grid-cols-3 gap-2 md:gap-3">
             {[
-              [DatabaseIcon, "SQLite lokal", "Tersimpan di perangkat"],
-              [LockIcon, "Enkripsi per item", "Kunci hanya milik Anda"],
-              [FolderSyncIcon, "Folder sinkron", "Folder cloud milik Anda"],
-            ].map(([Icon, name, sub]) => {
+              [DatabaseIcon, t.sqlite, t.sqliteShort, t.sqliteBody],
+              [LockIcon, t.encryption, t.encryptionShort, t.encryptionBody],
+              [FolderSyncIcon, t.sync, t.syncShort, t.syncBody],
+            ].map(([Icon, name, short, sub]) => {
               const I = Icon as typeof DatabaseIcon
               return (
                 <div key={name as string} className="flex items-center justify-center gap-1.5 rounded-[10px] border bg-card p-2.5 md:justify-start md:gap-2.5 md:rounded-xl md:p-3.5">
                   <I className="size-4 shrink-0" />
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-xs font-semibold md:text-[13px]">{(name as string).split(" ")[0]}<span className="max-md:hidden"> {(name as string).split(" ").slice(1).join(" ")}</span></span>
+                    <span className="text-xs font-semibold md:text-[13px]">
+                      <span className="md:hidden">{short as string}</span>
+                      <span className="max-md:hidden">{name as string}</span>
+                    </span>
                     <span className="hidden text-[11px] text-muted-foreground md:block">{sub as string}</span>
                   </div>
                 </div>
@@ -156,20 +170,23 @@ function initials(name: string) {
 }
 
 export async function About() {
+  const lang = await getLocale()
+  const { profile } = getSite(lang)
+  const t = getUi(lang).about
   // Name, role, location and photo follow the GitHub profile; content/site.ts is the fallback.
-  const gh = await getProfile(profile.github)
+  const gh = await getProfile(profileGithub)
   const name = gh?.name ?? profile.name
   const role = gh?.bio ?? profile.role
   const location = gh?.location ?? profile.location
-  const githubUrl = gh?.url ?? `https://github.com/${profile.github}`
+  const githubUrl = gh?.url ?? `https://github.com/${profileGithub}`
   return (
     <section id="tentang" className="border-b py-14 md:py-28">
       <Container className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-16">
-        <SectionHeading kicker="Tentang pembuat" title="Satu orang, banyak platform." size="md" className="lg:hidden" />
+        <SectionHeading kicker={t.kicker} title={t.title} size="md" className="lg:hidden" />
         <div className="flex flex-col gap-5 rounded-[18px] border bg-card p-5 shadow-xs md:gap-6 md:rounded-[20px] md:p-8 lg:w-[440px] lg:shrink-0">
           <div className="flex items-center gap-4">
             <span className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-muted text-lg font-semibold md:size-[72px] md:text-2xl">
-              {gh ? <Image src={gh.avatarUrl} alt={`Foto profil ${name}`} fill sizes="72px" className="object-cover" /> : initials(name)}
+              {gh ? <Image src={gh.avatarUrl} alt={fill(t.photo, { name })} fill sizes="72px" className="object-cover" /> : initials(name)}
             </span>
             <div className="flex flex-col gap-1">
               <span className="text-[17px] font-semibold md:text-xl">{name}</span>
@@ -204,12 +221,12 @@ export async function About() {
             </a>
             <a href={`mailto:${links.email}`} className={buttonClass()}>
               <SendIcon data-icon="inline-start" />
-              Hubungi
+              {t.contact}
             </a>
           </div>
         </div>
         <div className="flex flex-1 flex-col gap-7">
-          <SectionHeading kicker="Tentang pembuat" title="Satu orang, banyak platform." size="md" className="max-lg:hidden">
+          <SectionHeading kicker={t.kicker} title={t.title} size="md" className="max-lg:hidden">
             {profile.intro}
           </SectionHeading>
           <ul className="divide-y rounded-2xl border bg-card">
@@ -223,9 +240,9 @@ export async function About() {
                   <span className="text-xs text-muted-foreground md:text-[13px]">{s.body}</span>
                 </div>
                 <div className="hidden gap-1.5 md:flex">
-                  {s.tags.map((t) => (
-                    <Badge key={t} variant="outline">
-                      {t}
+                  {s.tags.map((tag) => (
+                    <Badge key={tag} variant="outline">
+                      {tag}
                     </Badge>
                   ))}
                 </div>
@@ -238,17 +255,20 @@ export async function About() {
   )
 }
 
-export function Faq() {
+export async function Faq() {
+  const lang = await getLocale()
+  const { faq } = getSite(lang)
+  const t = getUi(lang).faq
   return (
     <section id="faq" className="border-b bg-sidebar py-14 md:py-28">
       <Container className="grid gap-6 lg:grid-cols-[400px_1fr] lg:gap-16">
         <div className="flex flex-col gap-6">
-          <SectionHeading kicker="FAQ" title="Pertanyaan yang sering muncul." size="md">
-            <span className="max-md:hidden">Tidak menemukan jawabannya? Kirim pesan, saya balas sendiri.</span>
+          <SectionHeading kicker={t.kicker} title={t.title} size="md">
+            <span className="max-md:hidden">{t.body}</span>
           </SectionHeading>
           <a href={`mailto:${links.email}`} className={cn(buttonClass({ variant: "outline" }), "w-fit max-md:hidden")}>
             <MailIcon data-icon="inline-start" />
-            Tanya langsung
+            {t.ask}
           </a>
         </div>
         <Accordion defaultValue={[0]} className="rounded-2xl border bg-card px-4 py-1 md:px-6 md:py-2">
@@ -264,7 +284,10 @@ export function Faq() {
   )
 }
 
-export function Cta() {
+export async function Cta() {
+  const lang = await getLocale()
+  const { cta } = getSite(lang)
+  const t = getUi(lang).cta
   return (
     <section className="border-b py-10 md:py-24">
       <Container>
@@ -279,15 +302,15 @@ export function Cta() {
             <p className="text-[15px] leading-relaxed text-primary-foreground/60 md:text-[17px]">{cta.body}</p>
           </div>
           <div className="relative flex flex-col gap-3 sm:flex-row">
-            <ScrollLink href="/#aplikasi" className={buttonClass({ variant: "secondary", size: "lg" })}>
+            <ScrollLink href={localeHref(lang, "/#aplikasi")} className={buttonClass({ variant: "secondary", size: "lg" })}>
               <DownloadIcon data-icon="inline-start" />
-              Unduh aplikasi
+              {t.download}
             </ScrollLink>
             <a
               href={links.waitlist("Rs Ecosystem")}
               className={cn(buttonClass({ variant: "ghost", size: "lg" }), "border-primary-foreground/20 bg-primary-foreground/5 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground")}
             >
-              Gabung waitlist
+              {t.waitlist}
             </a>
           </div>
         </div>

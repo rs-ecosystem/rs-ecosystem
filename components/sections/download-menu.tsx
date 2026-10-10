@@ -13,18 +13,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { fill, type Locale } from "@/lib/i18n"
 import { formatBytes } from "@/lib/release"
 
 export type DownloadOption = { href: string; label: string; hint: string; size: number; primary: boolean }
+export type DownloadStrings = { download: string; downloadFile: string; version: string; otherFiles: string }
 
-/** "Unduh" button: one file goes straight to it, several open a menu (recommended files first). */
+/** "Download" button: one file goes straight to it, several open a menu (recommended files first). */
 export function DownloadMenu({
+  lang,
+  strings: t,
   version,
   options,
   variant = "default",
   size = "default",
   className,
 }: {
+  lang: Locale
+  strings: DownloadStrings
   version: string
   options: DownloadOption[]
   variant?: "default" | "secondary"
@@ -35,7 +41,7 @@ export function DownloadMenu({
     return (
       <a href={options[0].href} className={buttonClass({ variant, size, className })}>
         <DownloadIcon data-icon="inline-start" />
-        Unduh {options[0].label}
+        {fill(t.downloadFile, { label: options[0].label })}
       </a>
     )
   }
@@ -45,23 +51,23 @@ export function DownloadMenu({
     <DropdownMenu>
       <DropdownMenuTrigger render={<Button variant={variant} size={size} className={className} />}>
         <DownloadIcon data-icon="inline-start" />
-        Unduh
+        {t.download}
         <ChevronDownIcon data-icon="inline-end" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-72">
         <DropdownMenuGroup>
-          <DropdownMenuLabel>Versi {version}</DropdownMenuLabel>
+          <DropdownMenuLabel>{fill(t.version, { version })}</DropdownMenuLabel>
           {main.map((o) => (
-            <Item key={o.href} option={o} />
+            <Item key={o.href} option={o} lang={lang} />
           ))}
         </DropdownMenuGroup>
         {more.length > 0 && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuLabel>File lain</DropdownMenuLabel>
+              <DropdownMenuLabel>{t.otherFiles}</DropdownMenuLabel>
               {more.map((o) => (
-                <Item key={o.href} option={o} />
+                <Item key={o.href} option={o} lang={lang} />
               ))}
             </DropdownMenuGroup>
           </>
@@ -71,12 +77,12 @@ export function DownloadMenu({
   )
 }
 
-function Item({ option }: { option: DownloadOption }) {
+function Item({ option, lang }: { option: DownloadOption; lang: Locale }) {
   return (
     <DropdownMenuItem render={<a href={option.href} />} className="flex-col items-start gap-0.5">
       <span className="flex w-full justify-between gap-2 font-medium">
         {option.label}
-        <span className="font-normal text-muted-foreground">{formatBytes(option.size)}</span>
+        <span className="font-normal text-muted-foreground">{formatBytes(option.size, lang)}</span>
       </span>
       <span className="text-xs text-muted-foreground">{option.hint}</span>
     </DropdownMenuItem>

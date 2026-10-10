@@ -1,17 +1,21 @@
 import { Container, SectionHeading } from "@/components/site/layout"
 import { previewApps } from "@/content/apps"
+import { getUi } from "@/content/ui"
+import { getLocale } from "@/lib/locale"
 
 import { Gallery } from "./gallery"
 
-export function Preview() {
+export async function Preview() {
+  const lang = await getLocale()
+  const t = getUi(lang).preview
   return (
     <section id="preview" className="border-b py-14 md:py-28">
       <Container>
         <Gallery
-          apps={previewApps()}
+          apps={previewApps(lang)}
           heading={
-            <SectionHeading kicker="Preview" title="Lihat lebih dekat.">
-              Cuplikan langsung dari aplikasinya, di ponsel dan Mac. Ketuk gambar untuk memperbesar.
+            <SectionHeading kicker={t.kicker} title={t.title}>
+              {t.body}
             </SectionHeading>
           }
         />

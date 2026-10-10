@@ -13,7 +13,7 @@ npm run build && npm run lint && npm run typecheck
 
 | What | Source | How it updates |
 |---|---|---|
-| Copy: hero, apps, coming-soon apps, principles, roadmap, profile, FAQ | `content/site.ts`, `content/apps.ts` | Edit, commit, push. Vercel redeploys. |
+| Copy: hero, apps, coming-soon apps, principles, roadmap, profile, FAQ | `content/site.ts`, `content/apps.ts` (both languages side by side), interface strings in `content/ui.ts` | Edit, commit, push. Vercel redeploys. |
 | Version badge, "… sudah tersedia" pill, download menu | **GitHub Releases** of each app repo (newest non-draft release) | Hourly cache, plus the deploy hook below |
 | `/changelog` | Release notes (Markdown) of every release | Same as above |
 | Roadmap progress bar | **GitHub Milestone** whose title matches `source.milestone` in `content/site.ts` (closed vs total issues) | Same as above |
@@ -22,6 +22,15 @@ npm run build && npm run lint && npm run typecheck
 - `lib/github/data.ts` fetches with `'use cache'`. A good reply is cached for an hour (`cacheLife('hours')`); a failure (no token, network, rate limit) returns `null` and is cached only for minutes. The UI then falls back to `fallback` in `content/apps.ts` or to the roadmap item as written, so a page is never empty.
 - **Downloads from private repos:** `/unduh/[app]/[asset]` (`app/unduh/…/route.ts`) checks that the asset belongs to a published release, asks GitHub for a short-lived signed URL with the server-side token, and redirects there. The file goes straight from GitHub to the visitor, so it uses no Vercel bandwidth, and the token never reaches the browser.
 - Asset names are recognised by `classifyAsset` in `lib/release.ts`: `.apk` (arm64-v8a is the recommended one), `.dmg`, and `*chrome*.zip`. Any other file is not offered.
+
+## Languages
+
+Indonesian (default) lives at `/` and English at `/en`. Pages sit in `app/[lang]/`; `next.config.ts` rewrites `/` and `/changelog` to the `id` locale and redirects `/id/...` to the unprefixed URL, so there is no proxy function. A new page needs a line in those rewrites.
+
+- Copy is written as `tx("Indonesian", "English")`. `getSite(lang)`, `getLiveApps(lang)` and `getUi(lang)` return one language, and TypeScript fails the build if a string is missing its other language.
+- Server components get the locale with `getLocale()` (`lib/locale.ts`, from `next/root-params`). Client components receive their strings as props.
+- Links go through `localeHref(lang, path)`. The ID / EN switch (`components/site/language-switch.tsx`) keeps the current section (#hash).
+- Not translated: the phone mockups and store images (the apps themselves are in Indonesian) and the GitHub release notes; `/en/changelog` says so.
 
 ## Deploying on Vercel
 
@@ -38,4 +47,5 @@ npm run build && npm run lint && npm run typecheck
 - **Store preview (section "Preview"):** each live app's `gallery` points at `public/store/<slug>/` — the Mac banner, six phone screenshots, the store hero (1920×1080) and the feature graphic (1024×500), exported from Penpot's "Store preview" page, converted to WebP (`cwebp -q 86 -m 6`). Replace the files (same names) to update them.
 - **Roadmap item with live progress:** add `source: { type: "milestone", app: "<slug>", milestone: "<milestone title>" }`. Use `{ type: "latest-release", app }` to show the newest release instead.
 - **Waitlist / "Kabari saya":** `links.waitlist` in `content/site.ts` is a `mailto:` for now; swap in a Tally or Formspree URL when you have one.
+- **New page:** add it under `app/[lang]/` and its unprefixed path to the rewrites in `next.config.ts`.
 - Use `buttonClass()` (`lib/button-class.ts`) for links styled as buttons. It merges classes the way `<Button>` does, which plain `buttonVariants()` does not.

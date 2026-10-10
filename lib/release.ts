@@ -1,4 +1,5 @@
 // Pure helpers for release data: no I/O, safe on both server and client.
+import { intlLocale, type Locale } from "./i18n"
 
 export type Platform = "android" | "ios" | "macos" | "chrome"
 
@@ -9,7 +10,10 @@ export const platformLabel: Record<Platform, string> = {
   chrome: "Chrome",
 }
 
-export type DownloadKind = { platform: Platform; label: string; hint: string; primary: boolean; order: number }
+/** Kinds of release files; their labels and hints are in content/ui.ts (`download.kinds`). */
+export type DownloadKindId = "android-arm64" | "android-armv7" | "android-x86_64" | "android-x86" | "android" | "macos" | "chrome" | "ios"
+
+export type DownloadKind = { kind: DownloadKindId; platform: Platform; primary: boolean; order: number }
 
 /**
  * Names the files the release scripts produce, e.g. `rs-finance-0.1.0-beta.1-arm64-v8a.apk`,
@@ -19,15 +23,15 @@ export type DownloadKind = { platform: Platform; label: string; hint: string; pr
 export function classifyAsset(name: string): DownloadKind | null {
   const n = name.toLowerCase()
   if (n.endsWith(".apk")) {
-    if (n.includes("arm64-v8a")) return { platform: "android", label: "Android", hint: "Hampir semua HP (pilih ini kalau ragu)", primary: true, order: 0 }
-    if (n.includes("armeabi-v7a")) return { platform: "android", label: "Android 32-bit", hint: "HP lama", primary: false, order: 1 }
-    if (n.includes("x86_64")) return { platform: "android", label: "Android x86_64", hint: "Emulator & perangkat x86", primary: false, order: 2 }
-    if (n.includes("x86")) return { platform: "android", label: "Android x86", hint: "Emulator lama", primary: false, order: 3 }
-    return { platform: "android", label: "Android", hint: "APK", primary: true, order: 0 }
+    if (n.includes("arm64-v8a")) return { kind: "android-arm64", platform: "android", primary: true, order: 0 }
+    if (n.includes("armeabi-v7a")) return { kind: "android-armv7", platform: "android", primary: false, order: 1 }
+    if (n.includes("x86_64")) return { kind: "android-x86_64", platform: "android", primary: false, order: 2 }
+    if (n.includes("x86")) return { kind: "android-x86", platform: "android", primary: false, order: 3 }
+    return { kind: "android", platform: "android", primary: true, order: 0 }
   }
-  if (n.endsWith(".dmg")) return { platform: "macos", label: "Mac", hint: "macOS 15 ke atas, semua jenis Mac", primary: true, order: 10 }
-  if (n.includes("chrome") && n.endsWith(".zip")) return { platform: "chrome", label: "Ekstensi Chrome", hint: "Butuh app Mac", primary: true, order: 20 }
-  if (n.endsWith(".ipa")) return { platform: "ios", label: "iPhone", hint: "IPA", primary: true, order: 30 }
+  if (n.endsWith(".dmg")) return { kind: "macos", platform: "macos", primary: true, order: 10 }
+  if (n.includes("chrome") && n.endsWith(".zip")) return { kind: "chrome", platform: "chrome", primary: true, order: 20 }
+  if (n.endsWith(".ipa")) return { kind: "ios", platform: "ios", primary: true, order: 30 }
   return null
 }
 
@@ -41,8 +45,8 @@ export function versionStage(version: string): Stage {
   return "stable"
 }
 
-/** "0.1.0-beta.1" → "Beta 0.1"; "1.2.0" → "Versi 1.2". */
-export function shortVersionLabel(version: string): string {
+/** "0.1.0-beta.1" → "Beta 0.1"; "1.2.0" → "Versi 1.2" (`stableWord` is "Versi" / "Version"). */
+export function shortVersionLabel(version: string, stableWord: string): string {
   const [core] = version.split("-")
   const [major, minor] = core.split(".")
   const short = `${major}.${minor ?? 0}`
@@ -54,25 +58,21 @@ export function shortVersionLabel(version: string): string {
     case "rc":
       return `RC ${short}`
     default:
-      return `Versi ${short}`
+      return `${stableWord} ${short}`
   }
 }
 
-export function formatBytes(bytes: number): string {
-  if (bytes >= 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1).replace(".", ",")} MB`
+export function formatBytes(bytes: number, lang: Locale): string {
+  if (bytes >= 1024 * 1024) return `${new Intl.NumberFormat(intlLocale[lang], { maximumFractionDigits: 1, minimumFractionDigits: 1 }).format(bytes / 1024 / 1024)} MB`
   return `${Math.max(1, Math.round(bytes / 1024))} KB`
 }
 
-const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"]
-
-/** "2026-10-04T…" → "4 Okt 2026" (UTC, so build and runtime agree). */
-export function formatDate(iso: string): string {
-  const d = new Date(iso)
-  return `${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`
+/** "2026-10-04T…" → "4 Okt 2026" / "Oct 4, 2026" (UTC, so build and runtime agree). */
+export function formatDate(iso: string, lang: Locale): string {
+  return new Intl.DateTimeFormat(intlLocale[lang], { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(iso))
 }
 
-/** "2026-10-04T…" → "Okt 2026". */
-export function formatMonth(iso: string): string {
-  const d = new Date(iso)
-  return `${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`
+/** "2026-10-04T…" → "Okt 2026" / "Oct 2026". */
+export function formatMonth(iso: string, lang: Locale): string {
+  return new Intl.DateTimeFormat(intlLocale[lang], { month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(iso))
 }
