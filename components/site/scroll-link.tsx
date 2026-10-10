@@ -4,10 +4,30 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, type ComponentProps, type MouseEvent } from "react"
 
-/** "/#aplikasi" or "#aplikasi" → "aplikasi"; anything else → null. */
-export function hashTarget(href: string): string | null {
-  const m = /^\/?#(.+)$/.exec(href)
-  return m ? decodeURIComponent(m[1]) : null
+/**
+ * "/#aplikasi" → { path: "/", id: "aplikasi" }, "/en#aplikasi" → { path: "/en", … },
+ * "#aplikasi" → { path: null (this page), … }; hrefs without a hash → null.
+ */
+export function hashTarget(href: string): { path: string | null; id: string } | null {
+  const i = href.indexOf("#")
+  if (i < 0 || i === href.length - 1 || /^(https?:|mailto:)/.test(href)) return null
+  return { path: href.slice(0, i) || null, id: decodeURIComponent(href.slice(i + 1)) }
+}
+
+/** True when `href` points at a section of the page that is open now. */
+export function isSamePageHash(href: string, pathname: string): boolean {
+  const t = hashTarget(href)
+  return t !== null && (t.path === null || t.path === pathname)
+}
+
+/**
+ * The visible element with this id. Cache Components keeps recently visited
+ * pages in the DOM, hidden (e.g. the other language after switching), so an id
+ * can exist twice; `getElementById` could return the hidden copy.
+ */
+export function findSection(id: string): HTMLElement | null {
+  const all = document.querySelectorAll<HTMLElement>(`[id="${CSS.escape(id)}"]`)
+  return [...all].find((el) => el.getClientRects().length > 0) ?? null
 }
 
 function navOffset() {
@@ -22,7 +42,7 @@ function navOffset() {
 let cancelSettle: (() => void) | null = null
 
 export function scrollToSection(id: string, behavior: ScrollBehavior = "smooth"): boolean {
-  const el = document.getElementById(id)
+  const el = findSection(id)
   if (!el) return false
   cancelSettle?.()
   cancelSettle = null
@@ -61,16 +81,16 @@ function isPlainLeftClick(e: MouseEvent) {
 }
 
 /**
- * Link that scrolls reliably to "/#section" targets on the home page, also
- * when the same link is clicked twice (no hash change, so no native scroll).
- * "/" scrolls back to the top. Other hrefs, or any link on another page,
- * behave like a normal Link.
+ * Link that scrolls reliably to a section of the page that is open now
+ * ("/#section", "/en#section"), also when the same link is clicked twice (no
+ * hash change, so no native scroll). A link to the open page itself ("/" on
+ * the home page) scrolls back to the top. Other hrefs behave like a normal Link.
  */
 export function ScrollLink({ href, onClick, scroll, ...props }: ComponentProps<typeof Link> & { href: string }) {
   const pathname = usePathname()
-  // From another page, Next.js would scroll to the top after navigating and
-  // undo HashScroller's work, so leave the scrolling to HashScroller.
-  const crossPageHash = pathname !== "/" && hashTarget(href) !== null
+  // A section on another page: Next.js would scroll to the top after
+  // navigating and undo HashScroller's work, so leave the scrolling to HashScroller.
+  const crossPageHash = hashTarget(href) !== null && !isSamePageHash(href, pathname)
   return (
     <Link
       href={href}
@@ -78,16 +98,16 @@ export function ScrollLink({ href, onClick, scroll, ...props }: ComponentProps<t
       {...props}
       onClick={(e) => {
         onClick?.(e)
-        if (e.defaultPrevented || pathname !== "/" || !isPlainLeftClick(e)) return
-        if (href === "/") {
-          // Logo on the home page: back to the top.
+        if (e.defaultPrevented || !isPlainLeftClick(e)) return
+        if (href === pathname) {
+          // e.g. the logo on the home page: back to the top.
           e.preventDefault()
-          if (window.location.hash) window.history.pushState(null, "", "/")
+          if (window.location.hash) window.history.pushState(null, "", pathname)
           window.scrollTo({ top: 0, behavior: "smooth" })
           return
         }
-        const id = hashTarget(href)
-        if (!id) return
+        if (!isSamePageHash(href, pathname)) return
+        const { id } = hashTarget(href)!
         e.preventDefault()
         if (window.location.hash !== `#${id}`) window.history.pushState(null, "", `#${id}`)
         scrollToSection(id)
@@ -111,8 +131,8 @@ export function HashScroller() {
     let timer = 0
     let tries = 0
     const tick = () => {
-      const el = document.getElementById(id)
-      if (el && el.getClientRects().length > 0) {
+      const el = findSection(id)
+      if (el) {
         el.scrollIntoView({ behavior: "instant", block: "start" })
         return
       }

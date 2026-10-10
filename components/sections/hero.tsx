@@ -6,19 +6,26 @@ import { Phone } from "@/components/mock/phone"
 import { Container } from "@/components/site/layout"
 import { ScrollLink } from "@/components/site/scroll-link"
 import { buttonClass } from "@/lib/button-class"
-import { liveApps } from "@/content/apps"
-import { hero } from "@/content/site"
+import { getLiveApps } from "@/content/apps"
+import { getSite } from "@/content/site"
+import { getUi } from "@/content/ui"
 import { getAppStatus } from "@/lib/apps"
+import { fill, localeHref } from "@/lib/i18n"
+import { getLocale } from "@/lib/locale"
 
 export async function Hero() {
+  const lang = await getLocale()
+  const { hero } = getSite(lang)
+  const t = getUi(lang).hero
+  const liveApps = getLiveApps(lang)
   // The pill announces the newest released app version, straight from GitHub.
-  const statuses = await Promise.all(liveApps.map(async (app) => ({ app, status: await getAppStatus(app) })))
+  const statuses = await Promise.all(liveApps.map(async (app) => ({ app, status: await getAppStatus(app, lang) })))
   const announced = statuses
     .filter((s) => s.status.latest?.publishedAt)
     .sort((a, b) => b.status.latest!.publishedAt!.localeCompare(a.status.latest!.publishedAt!))[0]
   const pill = announced
-    ? `${announced.app.name} ${announced.status.label.toLowerCase()} sudah tersedia`
-    : `${liveApps[0].name} ${liveApps[0].fallback.label.toLowerCase()} sudah tersedia`
+    ? fill(t.available, { app: announced.app.name, version: announced.status.label.toLowerCase() })
+    : fill(t.available, { app: liveApps[0].name, version: liveApps[0].fallback.label.toLowerCase() })
 
   return (
     <section
@@ -31,9 +38,9 @@ export async function Hero() {
         style={{ background: "radial-gradient(closest-side, var(--hero-glow), transparent)" }}
       />
       <Container className="relative lg:h-[760px]">
-        <div className="flex max-w-[600px] flex-col gap-5 pt-8 md:gap-7 md:pt-16 lg:pt-24">
+        <div className="flex max-w-[600px] flex-col gap-5 pt-8 md:gap-7 md:pt-16 lg:max-w-[520px] lg:pt-24 xl:max-w-[600px]">
           <ScrollLink
-            href="/#aplikasi"
+            href={localeHref(lang, "/#aplikasi")}
             className="flex w-fit items-center gap-2 rounded-full border bg-background py-1.5 pr-3.5 pl-3 text-xs font-medium shadow-xs transition-colors hover:bg-muted md:text-[13px]"
           >
             <span className="size-2 rounded-full bg-success" />
@@ -43,19 +50,19 @@ export async function Hero() {
           <h1 className="text-4xl leading-[1.1] font-semibold tracking-[-0.03em] text-balance md:text-6xl md:text-wrap md:leading-[1.08]">{hero.headline}</h1>
           <p className="max-w-[560px] text-base leading-relaxed text-muted-foreground md:text-lg">{hero.subline}</p>
           <div className="flex flex-col gap-2.5 sm:flex-row sm:gap-3">
-            <ScrollLink href="/#aplikasi" className={buttonClass({ size: "lg" })}>
-              Jelajahi aplikasi
+            <ScrollLink href={localeHref(lang, "/#aplikasi")} className={buttonClass({ size: "lg" })}>
+              {t.explore}
               <ArrowRightIcon data-icon="inline-end" />
             </ScrollLink>
-            <ScrollLink href="/#tentang" className={buttonClass({ size: "lg", variant: "outline" })}>
-              Lihat portofolio
+            <ScrollLink href={localeHref(lang, "/#tentang")} className={buttonClass({ size: "lg", variant: "outline" })}>
+              {t.portfolio}
             </ScrollLink>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 pt-2 sm:justify-start">
-            <span className="hidden text-[13px] text-muted-foreground sm:inline">Tersedia di</span>
+            <span className="hidden text-[13px] text-muted-foreground sm:inline">{t.availableOn}</span>
             {[
               [SmartphoneIcon, "Android"],
-              [AppleIcon, "iPhone & Mac"],
+              [AppleIcon, t.iphoneMac],
               [ChromeIcon, "Chrome"],
             ].map(([Icon, label]) => {
               const I = Icon as typeof SmartphoneIcon

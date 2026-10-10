@@ -4,10 +4,13 @@ import Image from "next/image"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-import { ExpandHint, type PreviewApp, PreviewTrigger } from "./preview-lightbox"
+import { fill } from "@/lib/i18n"
+
+import { ExpandHint, type PreviewApp, PreviewTrigger, usePreviewStrings } from "./preview-lightbox"
 
 /** Store preview per app: the Mac banner, six phone screenshots and the store banners; each opens the lightbox. */
 export function Gallery({ apps, heading }: { apps: PreviewApp[]; heading: React.ReactNode }) {
+  const t = usePreviewStrings()
   return (
     <Tabs defaultValue={apps[0].slug} className="gap-8 md:gap-10">
       <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
@@ -26,7 +29,7 @@ export function Gallery({ apps, heading }: { apps: PreviewApp[]; heading: React.
           <PreviewTrigger
             slug={app.slug}
             index={0}
-            label={`Perbesar: ${app.name} untuk Mac`}
+            label={fill(t.enlargeItem, { title: fill(t.forMac, { app: app.name }) })}
             className="relative overflow-hidden rounded-2xl border bg-sidebar shadow-xs focus-visible:ring-3 focus-visible:ring-ring/50 md:rounded-[20px]"
           >
             <Image
@@ -37,13 +40,13 @@ export function Gallery({ apps, heading }: { apps: PreviewApp[]; heading: React.
               sizes="(min-width: 1248px) 1200px, 100vw"
               className="h-auto w-full transition-transform duration-500 group-hover:scale-[1.01]"
             />
-            <ExpandHint />
+            <ExpandHint label={t.enlarge} />
           </PreviewTrigger>
 
           <ul className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-6 md:gap-4 md:overflow-visible md:px-0 md:pb-0">
             {app.gallery.screens.map((shot, i) => (
               <li key={shot.src} className="w-[44%] shrink-0 snap-start sm:w-[30%] md:w-auto">
-                <PreviewTrigger slug={app.slug} index={i + 1} label={`Perbesar: ${shot.title}`} className="block w-full">
+                <PreviewTrigger slug={app.slug} index={i + 1} label={fill(t.enlargeItem, { title: shot.title })} className="block w-full">
                   <span className="relative block overflow-hidden rounded-xl border bg-sidebar shadow-xs transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg group-focus-visible:ring-3 group-focus-visible:ring-ring/50">
                     <Image
                       src={shot.src}
@@ -71,7 +74,7 @@ export function Gallery({ apps, heading }: { apps: PreviewApp[]; heading: React.
                 key={banner.src}
                 slug={app.slug}
                 index={index}
-                label={`Perbesar: ${banner.alt}`}
+                label={fill(t.enlargeItem, { title: banner.alt })}
                 className="relative overflow-hidden rounded-2xl border bg-sidebar shadow-xs focus-visible:ring-3 focus-visible:ring-ring/50"
               >
                 <Image
@@ -82,7 +85,7 @@ export function Gallery({ apps, heading }: { apps: PreviewApp[]; heading: React.
                   sizes="(min-width: 768px) 640px, 100vw"
                   className="h-auto w-full transition-transform duration-500 group-hover:scale-[1.01]"
                 />
-                <ExpandHint />
+                <ExpandHint label={t.enlarge} />
               </PreviewTrigger>
             ))}
           </div>

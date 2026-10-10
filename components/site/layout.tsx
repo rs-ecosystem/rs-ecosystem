@@ -4,9 +4,13 @@ import type { ReactNode } from "react"
 import { AppIcon, GithubIcon, LinkedinIcon } from "@/components/brand/icons"
 import { buttonClass } from "@/lib/button-class"
 import { Separator } from "@/components/ui/separator"
-import { links, nav, site } from "@/content/site"
+import { getSite, links, site } from "@/content/site"
+import { getUi } from "@/content/ui"
+import { localeHref } from "@/lib/i18n"
+import { getLocale } from "@/lib/locale"
 import { cn } from "@/lib/utils"
 
+import { LanguageSwitch } from "./language-switch"
 import { MobileNav } from "./mobile-nav"
 import { ScrollLink } from "./scroll-link"
 import { ThemeToggle } from "./theme-toggle"
@@ -49,20 +53,23 @@ export function SectionHeading({
   )
 }
 
-export function Brand({ size = 32 }: { size?: number }) {
+export function Brand({ home, size = 32 }: { home: string; size?: number }) {
   return (
-    <ScrollLink href="/" className="flex items-center gap-2.5 font-semibold">
+    <ScrollLink href={home} className="flex items-center gap-2.5 font-semibold">
       <AppIcon size={size} />
       <span className="text-[15px] md:text-base">{site.name}</span>
     </ScrollLink>
   )
 }
 
-export function Navbar() {
+export async function Navbar() {
+  const lang = await getLocale()
+  const { nav } = getSite(lang)
+  const ui = getUi(lang)
   return (
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-md supports-backdrop-filter:bg-background/70">
       <Container className="flex h-14 items-center justify-between md:h-[68px]">
-        <Brand />
+        <Brand home={localeHref(lang, "/")} />
         <nav className="hidden items-center gap-8 lg:flex">
           {nav.map((item) => (
             <ScrollLink key={item.href} href={item.href} className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
@@ -74,13 +81,18 @@ export function Navbar() {
           <a href={links.github} target="_blank" rel="noreferrer" aria-label="GitHub" className={cn(buttonClass({ variant: "ghost", size: "icon" }), "hidden md:inline-flex")}>
             <GithubIcon />
           </a>
-          <ThemeToggle />
-          <ScrollLink href="/#aplikasi" className={cn(buttonClass(), "hidden md:inline-flex")}>
+          <LanguageSwitch lang={lang} label={ui.language.label} className="hidden sm:flex" />
+          <ThemeToggle label={ui.nav.theme} />
+          <ScrollLink href={localeHref(lang, "/#aplikasi")} className={cn(buttonClass(), "hidden md:inline-flex")}>
             <DownloadIcon data-icon="inline-start" />
-            Unduh aplikasi
+            {ui.nav.download}
           </ScrollLink>
           <div className="lg:hidden">
-            <MobileNav items={nav} />
+            <MobileNav
+              lang={lang}
+              items={[...nav, { href: localeHref(lang, "/changelog"), label: ui.nav.changelog }]}
+              strings={{ menu: ui.nav.menu, openMenu: ui.nav.openMenu, close: ui.nav.close, language: ui.language.label }}
+            />
           </div>
         </div>
       </Container>
@@ -88,23 +100,25 @@ export function Navbar() {
   )
 }
 
-const footerColumns = [
-  { title: "Aplikasi", items: [["Rs Finance", "/#aplikasi"], ["Rs Password", "/#aplikasi"], ["Segera hadir", "/#segera-hadir"], ["Roadmap", "/#roadmap"]] },
-  { title: "Sumber", items: [["Catatan perubahan", "/changelog"], ["Prinsip", "/#prinsip"], ["Teknologi", "/#teknologi"], ["FAQ", "/#faq"]] },
-  { title: "Kontak", items: [["Email", `mailto:${links.email}`], ["GitHub", links.github], ["LinkedIn", links.linkedin]] },
-]
-
-export function Footer() {
+export async function Footer() {
+  const lang = await getLocale()
+  const t = getUi(lang).footer
+  const changelog = getUi(lang).nav.changelog
+  const columns = [
+    { title: t.apps, items: [["Rs Finance", "/#aplikasi"], ["Rs Password", "/#aplikasi"], [t.comingSoon, "/#segera-hadir"], [t.roadmap, "/#roadmap"]] },
+    { title: t.resources, items: [[changelog, "/changelog"], [t.principles, "/#prinsip"], [t.technology, "/#teknologi"], [t.faq, "/#faq"]] },
+    { title: t.contact, items: [[t.email, `mailto:${links.email}`], ["GitHub", links.github], ["LinkedIn", links.linkedin]] },
+  ].map((col) => ({ ...col, items: col.items.map(([label, href]) => [label, localeHref(lang, href)] as const) }))
   return (
     <footer className="border-t">
       <Container className="flex flex-col gap-10 pt-10 pb-10 md:gap-12 md:pt-16">
         <div className="flex flex-col justify-between gap-10 md:flex-row">
           <div className="flex max-w-[300px] flex-col gap-4">
-            <Brand />
-            <p className="text-sm leading-relaxed text-muted-foreground">Aplikasi pribadi yang offline, terenkripsi, dan tetap milik Anda.</p>
+            <Brand home={localeHref(lang, "/")} />
+            <p className="text-sm leading-relaxed text-muted-foreground">{t.tagline}</p>
           </div>
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:gap-20">
-            {footerColumns.map((col) => (
+            {columns.map((col) => (
               <div key={col.title} className="flex flex-col gap-3">
                 <span className="text-sm font-semibold">{col.title}</span>
                 {col.items.map(([label, href]) =>
@@ -124,11 +138,13 @@ export function Footer() {
         </div>
         <Separator />
         <div className="flex flex-col-reverse items-start justify-between gap-4 sm:flex-row sm:items-center">
-          <p className="text-[13px] text-muted-foreground">© {site.since} {site.name}. Dibuat dengan Rust di Indonesia.</p>
+          <p className="text-[13px] text-muted-foreground">
+            © {site.since} {site.name}. {t.madeWith}
+          </p>
           <div className="flex gap-1 text-muted-foreground">
             <a href={links.github} target="_blank" rel="noreferrer" aria-label="GitHub" className={buttonClass({ variant: "ghost", size: "icon" })}><GithubIcon /></a>
             <a href={links.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn" className={buttonClass({ variant: "ghost", size: "icon" })}><LinkedinIcon /></a>
-            <a href={`mailto:${links.email}`} aria-label="Email" className={buttonClass({ variant: "ghost", size: "icon" })}><MailIcon /></a>
+            <a href={`mailto:${links.email}`} aria-label={t.email} className={buttonClass({ variant: "ghost", size: "icon" })}><MailIcon /></a>
           </div>
         </div>
       </Container>

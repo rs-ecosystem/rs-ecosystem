@@ -2,48 +2,61 @@
 
 import { ChevronLeftIcon, ChevronRightIcon, ExpandIcon, XIcon } from "lucide-react"
 import Image from "next/image"
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react"
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react"
 
 import { AppIcon } from "@/components/brand/icons"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
 import type { LiveApp } from "@/content/apps"
+import type { Ui } from "@/content/ui"
+import { fill } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
 export type PreviewApp = { slug: string; name: string; iconWord?: string; gallery: LiveApp["gallery"] }
 type Shot = { src: string; title: string; width: number; height: number }
+export type PreviewStrings = Ui["preview"]
 
 // Lightbox order: Mac banner (0), phone screenshots (1–6), store hero (7), feature graphic (8).
-export function shotsOf(app: PreviewApp): Shot[] {
+export function shotsOf(app: PreviewApp, t: PreviewStrings): Shot[] {
   const { mac, screens, banners } = app.gallery
   return [
-    { src: mac.src, title: `${app.name} untuk Mac`, width: 2880, height: 1800 },
+    { src: mac.src, title: fill(t.forMac, { app: app.name }), width: 2880, height: 1800 },
     ...screens.map((s) => ({ ...s, width: 1080, height: 2400 })),
-    { src: banners.hero.src, title: "Banner", width: 1920, height: 1080 },
-    { src: banners.feature.src, title: "Feature graphic", width: 1024, height: 500 },
+    { src: banners.hero.src, title: t.banner, width: 1920, height: 1080 },
+    { src: banners.feature.src, title: t.featureGraphic, width: 1024, height: 500 },
   ]
 }
 
-const PreviewContext = createContext<(slug: string, index: number) => void>(() => {})
+const PreviewContext = createContext<{ open: (slug: string, index: number) => void; t: PreviewStrings } | null>(null)
+
+function usePreviewContext() {
+  const ctx = useContext(PreviewContext)
+  if (!ctx) throw new Error("PreviewTrigger / Gallery need a PreviewProvider")
+  return ctx
+}
 
 /** Opens an app's store preview in the shared lightbox at `index` (see `shotsOf`). */
-export const useOpenPreview = () => useContext(PreviewContext)
+export const useOpenPreview = () => usePreviewContext().open
+
+/** The lightbox strings in the page's language. */
+export const usePreviewStrings = () => usePreviewContext().t
 
 type State = { app: PreviewApp; index: number; dir: 1 | -1 }
 
 /** One lightbox for the whole page, so both the app cards and the Preview section can open it. */
-export function PreviewProvider({ apps, children }: { apps: PreviewApp[]; children: ReactNode }) {
+export function PreviewProvider({ apps, strings, children }: { apps: PreviewApp[]; strings: PreviewStrings; children: ReactNode }) {
   const [state, setState] = useState<State | null>(null)
 
   const openPreview = useCallback(
     (slug: string, index: number) => {
       const app = apps.find((a) => a.slug === slug)
-      if (app) setState({ app, index: Math.min(Math.max(index, 0), shotsOf(app).length - 1), dir: 1 })
+      if (app) setState({ app, index: Math.min(Math.max(index, 0), shotsOf(app, strings).length - 1), dir: 1 })
     },
-    [apps]
+    [apps, strings]
   )
+  const value = useMemo(() => ({ open: openPreview, t: strings }), [openPreview, strings])
 
   return (
-    <PreviewContext.Provider value={openPreview}>
+    <PreviewContext.Provider value={value}>
       {children}
       <Dialog open={state !== null} onOpenChange={(o) => !o && setState(null)}>
         <DialogContent
@@ -51,16 +64,16 @@ export function PreviewProvider({ apps, children }: { apps: PreviewApp[]; childr
           overlayClassName="bg-black/85 supports-backdrop-filter:backdrop-blur-md"
           className="top-0 left-0 flex h-dvh w-screen max-w-none translate-x-0 translate-y-0 flex-col gap-0 rounded-none bg-transparent p-0 text-white ring-0 sm:max-w-none"
         >
-          {state && <Carousel state={state} setState={setState} />}
+          {state && <Carousel state={state} setState={setState} t={strings} />}
         </DialogContent>
       </Dialog>
     </PreviewContext.Provider>
   )
 }
 
-function Carousel({ state, setState }: { state: State; setState: (fn: (s: State | null) => State | null) => void }) {
+function Carousel({ state, setState, t }: { state: State; setState: (fn: (s: State | null) => State | null) => void; t: PreviewStrings }) {
   const { app, index, dir } = state
-  const shots = shotsOf(app)
+  const shots = shotsOf(app, t)
   const current = shots[index]
   const go = useCallback(
     (to: number) => setState((s) => (s ? { ...s, index: (to + shots.length) % shots.length, dir: to >= s.index ? 1 : -1 } : s)),
@@ -90,11 +103,11 @@ function Carousel({ state, setState }: { state: State; setState: (fn: (s: State 
         <div className="flex min-w-0 flex-1 flex-col">
           <DialogTitle className="truncate text-sm font-semibold text-white">{app.name}</DialogTitle>
           <DialogDescription className="truncate text-xs text-white/60">
-            {current.title} · {index + 1} dari {shots.length}
+            {current.title} · {fill(t.position, { i: index + 1, n: shots.length })}
           </DialogDescription>
         </div>
         <DialogClose
-          aria-label="Tutup"
+          aria-label={t.close}
           className="flex size-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 focus-visible:ring-3 focus-visible:ring-white/40 focus-visible:outline-none"
         >
           <XIcon className="size-4" />
@@ -129,8 +142,8 @@ function Carousel({ state, setState }: { state: State; setState: (fn: (s: State 
           ))}
         </div>
 
-        <NavButton side="left" onClick={() => step(-1)} />
-        <NavButton side="right" onClick={() => step(1)} />
+        <NavButton side="left" label={t.previous} onClick={() => step(-1)} />
+        <NavButton side="right" label={t.next} onClick={() => step(1)} />
       </div>
 
       <div ref={strip} className="flex h-[6.5rem] shrink-0 items-center gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:justify-center md:gap-2.5">
@@ -139,7 +152,7 @@ function Carousel({ state, setState }: { state: State; setState: (fn: (s: State 
             key={s.src}
             type="button"
             data-index={i}
-            aria-label={`Lihat ${s.title}`}
+            aria-label={fill(t.show, { title: s.title })}
             aria-current={i === index}
             onClick={() => go(i)}
             className={cn(
@@ -156,12 +169,12 @@ function Carousel({ state, setState }: { state: State; setState: (fn: (s: State 
   )
 }
 
-function NavButton({ side, onClick }: { side: "left" | "right"; onClick: () => void }) {
+function NavButton({ side, label, onClick }: { side: "left" | "right"; label: string; onClick: () => void }) {
   const Icon = side === "left" ? ChevronLeftIcon : ChevronRightIcon
   return (
     <button
       type="button"
-      aria-label={side === "left" ? "Sebelumnya" : "Berikutnya"}
+      aria-label={label}
       onClick={onClick}
       className={cn(
         "absolute top-1/2 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20 focus-visible:ring-3 focus-visible:ring-white/40 focus-visible:outline-none sm:flex",
@@ -195,7 +208,7 @@ export function PreviewTrigger({
   )
 }
 
-export function ExpandHint({ label = "Perbesar" }: { label?: string }) {
+export function ExpandHint({ label }: { label: string }) {
   return (
     <span className="pointer-events-none absolute right-3 bottom-3 flex items-center gap-1.5 rounded-full border bg-background/90 px-2.5 py-1 text-xs font-medium text-foreground opacity-0 shadow-xs backdrop-blur transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 max-md:opacity-100">
       <ExpandIcon className="size-3.5" />

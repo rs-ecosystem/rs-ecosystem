@@ -7,6 +7,22 @@ const nextConfig: NextConfig = {
   turbopack: { root: import.meta.dirname },
   // GitHub profile photo in the "Tentang pembuat" section.
   images: { remotePatterns: [{ protocol: "https", hostname: "avatars.githubusercontent.com", pathname: "/u/**" }] },
+  // Locales live in app/[lang]. Indonesian (default) is served without a prefix,
+  // English under /en. Add new pages to both lists.
+  async rewrites() {
+    return {
+      beforeFiles: [
+        { source: "/", destination: "/id" },
+        { source: "/changelog", destination: "/id/changelog" },
+      ],
+    }
+  },
+  async redirects() {
+    return [
+      { source: "/id", destination: "/", permanent: true },
+      { source: "/id/:path*", destination: "/:path*", permanent: true },
+    ]
+  },
 }
 
 export default nextConfig
